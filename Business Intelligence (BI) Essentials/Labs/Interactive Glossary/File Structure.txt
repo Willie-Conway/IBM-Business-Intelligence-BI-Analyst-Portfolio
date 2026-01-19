@@ -1,0 +1,9 @@
+bi-glossary/
+├── style.css                    # All styling (shared)
+├── index.html                   # Main modules page
+├── module1-bi-intro.html        # Module 1: 45+ terms
+├── module2-data-ecosystem.html  # Module 2: 60+ terms  
+├── module3-analytics.html       # Module 3: 40+ terms
+├── module4-wrangling.html       # Module 4: 40+ terms
+├── module5-visualization.html   # Module 5: 35+ terms
+└── search.html                  # Search across all modules ✅
