@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced RDBMS Concepts Interactive Lab</title>
+    <style>
+        :root {
+            --fd-color: #3498db;
+            --mvd-color: #2ecc71;
+            --key-color: #e74c3c;
+            --design-color: #9b59b6;
+            --success-color: #27ae60;
+            --bg-light: #f8f9fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            padding: 30px 40px;
+        }
+        
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        /* Navigation */
+        .navigation {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+        }
+        
+        .nav-btn {
+            padding: 10px 24px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .nav-btn.active {
+            color: white;
+            border-color: transparent;
+        }
+        
+        .nav-btn[data-section="concepts"] { border-color: var(--fd-color); }
+        .nav-btn[data-section="concepts"].active { background: var(--fd-color); }
+        
+        .nav-btn[data-section="car-dealership"] { border-color: var(--mvd-color); }
+        .nav-btn[data-section="car-dealership"].active { background: var(--mvd-color); }
+        
+        .nav-btn[data-section="best-practices"] { border-color: var(--design-color); }
+        .nav-btn[data-section="best-practices"].active { background: var(--design-color); }
+        
+        .nav-btn[data-section="quiz"] { border-color: var(--key-color); }
+        .nav-btn[data-section="quiz"].active { background: var(--key-color); }
+        
+        /* Main Content */
+        .main-content {
+            display: flex;
+            min-height: 800px;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #dee2e6;
+            padding: 30px 20px;
+            overflow-y: auto;
+        }
+        
+        .concept-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .concept-card {
+            background: white;
+            border: 2px solid;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .concept-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .concept-card.active {
+            background: #f8f9fa;
+        }
+        
+        .concept-card.fd { border-color: var(--fd-color); }
+        .concept-card.mvd { border-color: var(--mvd-color); }
+        .concept-card.keys { border-color: var(--key-color); }
+        .concept-card.design { border-color: var(--design-color); }
+        
+        .concept-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .concept-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .concept-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 30px;
+            background: #f8f9fa;
+            overflow-y: auto;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        /* Concepts Section */
+        .concept-detail {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .concept-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f1f1;
+        }
+        
+        .concept-badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .concept-badge.fd { background: var(--fd-color); }
+        .concept-badge.mvd { background: var(--mvd-color); }
+        .concept-badge.keys { background: var(--key-color); }
+        .concept-badge.design { background: var(--design-color); }
+        
+        .concept-example {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+        
+        .concept-example.fd { border-left-color: var(--fd-color); }
+        .concept-example.mvd { border-left-color: var(--mvd-color); }
+        .concept-example.keys { border-left-color: var(--key-color); }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        /* Car Dealership Section */
+        .schema-diagram {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .table {
+            background: #f8f9fa;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .table-name {
+            background: #3498db;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .table-columns {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .column {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .column.pk {
+            border-left-color: #e74c3c;
+        }
+        
+        .column.fk {
+            border-left-color: #2ecc71;
+        }
+        
+        .relationship {
+            position: absolute;
+            background: #f39c12;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* Interactive Exercise */
+        .exercise {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .question {
+            background: #e8f4fc;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .options {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .option {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+        
+        .option.selected {
+            border-color: #27ae60;
+            background: #e8f5e9;
+        }
+        
+        .submit-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover {
+            background: #219653;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        /* Best Practices */
+        .practice-card {
+            background: white;
+            border-left: 4px solid var(--design-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .practice-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--design-color);
+        }
+        
+        .practice-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1a237e;
+        }
+        
+        /* Quiz Section */
+        .quiz-container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--fd-color), var(--mvd-color), var(--key-color));
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .quiz-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .score-display {
+            text-align: center;
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--success-color);
+            margin: 40px 0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #dee2e6;
+            }
+            
+            .concept-cards {
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .concept-card {
+                min-width: 200px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+            
+            .navigation {
+                padding: 10px;
+            }
+            
+            .nav-btn {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+            
+            .concept-detail {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <div class="title">Advanced RDBMS Concepts Interactive Lab</div>
+            <div class="subtitle">Master Functional Dependencies, Multi-Valued Dependencies, Candidate Keys & Database Design</div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn active" data-section="concepts" onclick="showSection('concepts')">
+                📚 Core Concepts
+            </button>
+            <button class="nav-btn" data-section="car-dealership" onclick="showSection('car-dealership')">
+                🚗 Car Dealership Case
+            </button>
+            <button class="nav-btn" data-section="best-practices" onclick="showSection('best-practices')">
+                🏗️ Design Best Practices
+            </button>
+            <button class="nav-btn" data-section="quiz" onclick="showSection('quiz')">
+                🧠 Knowledge Check
+            </button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="concept-cards">
+                    <div class="concept-card fd active" onclick="showConcept('fd')">
+                        <div class="concept-icon">🔗</div>
+                        <div class="concept-title">Functional Dependencies</div>
+                        <div class="concept-desc">One attribute determines another. Crucial for data integrity.</div>
+                    </div>
+                    
+                    <div class="concept-card mvd" onclick="showConcept('mvd')">
+                        <div class="concept-icon">🔀</div>
+                        <div class="concept-title">Multi-Valued Dependencies</div>
+                        <div class="concept-desc">One attribute determines a set of values. Complex relationships.</div>
+                    </div>
+                    
+                    <div class="concept-card keys" onclick="showConcept('keys')">
+                        <div class="concept-icon">🔑</div>
+                        <div class="concept-title">Candidate Keys</div>
+                        <div class="concept-desc">Minimal sets that uniquely identify rows.</div>
+                    </div>
+                    
+                    <div class="concept-card design" onclick="showConcept('design')">
+                        <div class="concept-icon">🏗️</div>
+                        <div class="concept-title">Database Design</div>
+                        <div class="concept-desc">Best practices for optimal RDBMS design.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Concepts Section -->
+                <div class="section active" id="concepts-section">
+                    <!-- Functional Dependencies -->
+                    <div class="concept-detail" id="fd-detail">
+                        <div class="concept-header">
+                            <div class="concept-badge fd">Functional Dependency</div>
+                            <h2 style="color: #1a237e;">X → Y: One Attribute Determines Another</h2>
+                        </div>
+                        
+                        <div class="concept-example fd">
+                            <h3>Definition</h3>
+                            <p>A relationship where the value of one attribute (X) uniquely determines the value of another attribute (Y).</p>
+                            
+                            <div class="code-block">
+                                // Notation: X → Y<br>
+                                // EmployeeID → EmployeeName<br>
+                                // If you know EmployeeID, you can determine EmployeeName<br><br>
+                                
+                                EmployeeID | EmployeeName | Department<br>
+                                ----------|--------------|-----------<br>
+                                101       | Alice       | HR<br>
+                                102       | Bob         | IT<br>
+                                103       | Charlie     | Finance
+                            </div>
+                            
+                            <h3>Properties:</h3>
+                            <ul style="margin: 15px 0; padding-left: 20px;">
+                                <li><strong>Reflexivity:</strong> X → X (every attribute determines itself)</li>
+                                <li><strong>Transitivity:</strong> If X → Y and Y → Z, then X → Z</li>
+                                <li><strong>Augmentation:</strong> If X → Y, then XZ → YZ</li>
+                            </ul>
+                            
+                            <h3>Real-world Example:</h3>
+                            <p>In a student database: <code>StudentID → StudentName, StudentEmail</code></p>
+                            <p>Knowing the StudentID (101) uniquely determines the student's name (Alice) and email.</p>
+                        </div>
+                        
+                        <!-- Interactive Exercise -->
+                        <div class="exercise">
+                            <h3>🧪 Practice: Identify Functional Dependencies</h3>
+                            <p>Given this product table, identify all functional dependencies:</p>
+                            
+                            <div class="code-block" style="margin: 15px 0;">
+                                ProductID | ProductName | Category   | Price | SupplierID | SupplierName<br>
+                                1         | Laptop      | Electronics| 999   | S1         | TechCorp<br>
+                                2         | Mouse       | Electronics| 25    | S1         | TechCorp<br>
+                                3         | Notebook    | Stationery | 5     | S2         | OfficeSupplies
+                            </div>
+                            
+                            <div class="question">
+                                <p>Which of these are valid functional dependencies?</p>
+                                <div class="options">
+                                    <div class="option" onclick="selectOption(this, 1)">ProductID → ProductName</div>
+                                    <div class="option" onclick="selectOption(this, 2)">SupplierID → SupplierName</div>
+                                    <div class="option" onclick="selectOption(this, 3)">ProductName → Price</div>
+                                    <div class="option" onclick="selectOption(this, 4)">Category → SupplierID</div>
+                                </div>
+                            </div>
+                            
+                            <button class="submit-btn" onclick="checkFDAnswers()">Check Answers</button>
+                            <div id="fd-feedback" class="feedback"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- MVD Detail (initially hidden) -->
+                    <div class="concept-detail" id="mvd-detail" style="display: none;">
+                        <div class="concept-header">
+                            <div class="concept-badge mvd">Multi-Valued Dependency</div>
+                            <h2 style="color: #1a237e;">X →→ Y: One Attribute Determines a Set of Values</h2>
+                        </div>
+                        
+                        <div class="concept-example mvd">
+                            <h3>Definition</h3>
+                            <p>A relationship where one attribute (X) determines a set of possible values for another attribute (Y).</p>
+                            
+                            <div class="code-block">
+                                // Notation: X →→ {Y1, Y2, ...}<br>
+                                // EmployeeID →→ {ProjectID, ProjectName}<br><br>
+                                
+                                EmployeeID | ProjectID | ProjectName<br>
+                                ----------|-----------|------------<br>
+                                101       | P1        | Project Alpha<br>
+                                101       | P2        | Project Beta<br>
+                                102       | P1        | Project Alpha<br>
+                                103       | P3        | Project Gamma
+                            </div>
+                            
+                            <h3>Key Characteristics:</h3>
+                            <ul style="margin: 15px 0; padding-left: 20px;">
+                                <li>Represents many-to-many relationships</li>
+                                <li>Violates 4th Normal Form (4NF)</li>
+                                <li>Requires separate tables to eliminate redundancy</li>
+                            </ul>
+                            
+                            <h3>Real-world Example:</h3>
+                            <p>In a course registration system: <code>StudentID →→ {CourseID, CourseName}</code></p>
+                            <p>A student can enroll in multiple courses, creating multiple rows for the same student.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Keys Detail (initially hidden) -->
+                    <div class="concept-detail" id="keys-detail" style="display: none;">
+                        <div class="concept-header">
+                            <div class="concept-badge keys">Candidate Keys</div>
+                            <h2 style="color: #1a237e;">Minimal Sets that Uniquely Identify Rows</h2>
+                        </div>
+                        
+                        <div class="concept-example keys">
+                            <h3>Definition</h3>
+                            <p>A minimal set of attributes that uniquely identifies each row in a relation.</p>
+                            
+                            <div class="code-block">
+                                // Candidate Keys for a Student Table:<br><br>
+                                
+                                StudentID | Email           | Phone       | Name<br>
+                                101       | alice@edu.com  | 123-456-7890| Alice<br>
+                                102       | bob@edu.com    | 234-567-8901| Bob<br>
+                                103       | charlie@edu.com| 345-678-9012| Charlie
+                            </div>
+                            
+                            <h3>Candidate Keys in this table:</h3>
+                            <ul style="margin: 15px 0; padding-left: 20px;">
+                                <li><strong>StudentID</strong> - Unique for each student</li>
+                                <li><strong>Email</strong> - Should be unique per student</li>
+                                <li><strong>Phone</strong> - Should be unique per student</li>
+                            </ul>
+                            
+                            <h3>Properties:</h3>
+                            <ul style="margin: 15px 0; padding-left: 20px;">
+                                <li><strong>Uniqueness:</strong> Each combination must identify exactly one row</li>
+                                <li><strong>Minimality:</strong> No proper subset should be a key</li>
+                                <li><strong>Irreducibility:</strong> Cannot remove any attribute and still maintain uniqueness</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Design Detail (initially hidden) -->
+                    <div class="concept-detail" id="design-detail" style="display: none;">
+                        <div class="concept-header">
+                            <div class="concept-badge design">Database Design Best Practices</div>
+                            <h2 style="color: #1a237e;">Optimal RDBMS Design Principles</h2>
+                        </div>
+                        
+                        <div style="margin: 25px 0;">
+                            <div class="practice-card">
+                                <div class="practice-icon">🎯</div>
+                                <div class="practice-title">1. Normalize to Reduce Redundancy</div>
+                                <p>Follow 1NF, 2NF, 3NF rules to eliminate data duplication and ensure consistency.</p>
+                            </div>
+                            
+                            <div class="practice-card">
+                                <div class="practice-icon">⚡</div>
+                                <div class="practice-title">2. Index for Performance</div>
+                                <p>Create indexes on frequently queried columns and foreign keys for faster retrieval.</p>
+                            </div>
+                            
+                            <div class="practice-card">
+                                <div class="practice-icon">🔗</div>
+                                <div class="practice-title">3. Establish Foreign Key Relationships</div>
+                                <p>Use foreign keys with proper cascading actions to maintain referential integrity.</p>
+                            </div>
+                            
+                            <div class="practice-card">
+                                <div class="practice-icon">📊</div>
+                                <div class="practice-title">4. Choose Appropriate Data Types</div>
+                                <p>Use the smallest data type that fits your data to optimize storage and performance.</p>
+                            </div>
+                            
+                            <div class="practice-card">
+                                <div class="practice-icon">🏗️</div>
+                                <div class="practice-title">5. Plan for Scalability</div>
+                                <p>Consider partitioning, sharding, and archiving strategies for future growth.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Car Dealership Section -->
+                <div class="section" id="car-dealership-section">
+                    <div class="concept-detail">
+                        <div class="concept-header">
+                            <div class="concept-badge mvd">Car Dealership Database</div>
+                            <h2 style="color: #1a237e;">Real-world Case Study: Automobile Sales Tracking</h2>
+                        </div>
+                        
+                        <h3>📋 Database Schema:</h3>
+                        
+                        <!-- Car Table -->
+                        <div class="table">
+                            <div class="table-name">CAR</div>
+                            <div class="table-columns">
+                                <div class="column pk">CarID (Primary Key)</div>
+                                <div class="column">Make</div>
+                                <div class="column">Model</div>
+                                <div class="column">Year</div>
+                                <div class="column">Color</div>
+                                <div class="column">Price</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Customer Table -->
+                        <div class="table">
+                            <div class="table-name">CUSTOMER</div>
+                            <div class="table-columns">
+                                <div class="column pk">CustomerID (Primary Key)</div>
+                                <div class="column">FirstName</div>
+                                <div class="column">LastName</div>
+                                <div class="column">Email</div>
+                                <div class="column">Phone</div>
+                                <div class="column">Address</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Salesperson Table -->
+                        <div class="table">
+                            <div class="table-name">SALESPERSON</div>
+                            <div class="table-columns">
+                                <div class="column pk">SalespersonID (Primary Key)</div>
+                                <div class="column">FirstName</div>
+                                <div class="column">LastName</div>
+                                <div class="column">CommissionRate</div>
+                                <div class="column">Department</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sale Table -->
+                        <div class="table">
+                            <div class="table-name">SALE</div>
+                            <div class="table-columns">
+                                <div class="column">SaleID</div>
+                                <div class="column fk">CarID (Foreign Key → CAR)</div>
+                                <div class="column fk">CustomerID (Foreign Key → CUSTOMER)</div>
+                                <div class="column fk">SalespersonID (Foreign Key → SALESPERSON)</div>
+                                <div class="column">SaleDate</div>
+                                <div class="column">SalePrice</div>
+                                <div class="column">PaymentMethod</div>
+                            </div>
+                        </div>
+                        
+                        <div class="exercise">
+                            <h3>🧠 Interactive Analysis:</h3>
+                            
+                            <div class="question">
+                                <p><strong>Question 1:</strong> Identify Functional Dependencies in the CAR table</p>
+                                <div class="options">
+                                    <div class="option" onclick="selectDealershipOption(this, '1a')">CarID → Make, Model, Year, Color, Price</div>
+                                    <div class="option" onclick="selectDealershipOption(this, '1b')">Make → Model</div>
+                                    <div class="option" onclick="selectDealershipOption(this, '1c')">Color → Price</div>
+                                    <div class="option" onclick="selectDealershipOption(this, '1d')">Model → Year</div>
+                                </div>
+                            </div>
+                            
+                            <div class="question">
+                                <p><strong>Question 2:</strong> Identify Candidate Keys for the SALE table</p>
+                                <div class="options">
+                                    <div class="option" onclick="selectDealershipOption(this, '2a')">SaleID</div>
+                                    <div class="option" onclick="selectDealershipOption(this, '2b')">CarID + CustomerID + SaleDate</div>
+                                    <div class="option" onclick="selectDealershipOption(this, '2c')">CarID + CustomerID + SalespersonID</div>
+                                    <div class="option" onclick="selectDealershipOption(this, '2d')">SaleID OR (CarID + CustomerID + SaleDate)</div>
+                                </div>
+                            </div>
+                            
+                            <button class="submit-btn" onclick="checkDealershipAnswers()">Submit Analysis</button>
+                            <div id="dealership-feedback" class="feedback"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Best Practices Section -->
+                <div class="section" id="best-practices-section">
+                    <div class="concept-detail">
+                        <div class="concept-header">
+                            <div class="concept-badge design">RDBMS Design Best Practices</div>
+                            <h2 style="color: #1a237e;">Professional Database Design Guidelines</h2>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0;">
+                            <div style="background: #e8f4fc; padding: 20px; border-radius: 8px;">
+                                <h3 style="color: #1a237e; margin-bottom: 15px;">🎯 Before Design</h3>
+                                <ul style="padding-left: 20px;">
+                                    <li>Understand business requirements</li>
+                                    <li>Identify entities and relationships</li>
+                                    <li>Determine data constraints</li>
+                                    <li>Plan for future growth</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #e8f5e9; padding: 20px; border-radius: 8px;">
+                                <h3 style="color: #1a237e; margin-bottom: 15px;">⚡ Performance</h3>
+                                <ul style="padding-left: 20px;">
+                                    <li>Normalize for integrity</li>
+                                    <li>Denormalize for speed</li>
+                                    <li>Index strategically</li>
+                                    <li>Partition large tables</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #fff3e0; padding: 20px; border-radius: 8px;">
+                                <h3 style="color: #1a237e; margin-bottom: 15px;">🔧 Maintenance</h3>
+                                <ul style="padding-left: 20px;">
+                                    <li>Regular backups</li>
+                                    <li>Monitor performance</li>
+                                    <li>Update statistics</li>
+                                    <li>Archive old data</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- E-commerce Example -->
+                        <div class="concept-example" style="border-left-color: var(--design-color);">
+                            <h3>📊 E-commerce Database Example</h3>
+                            <div class="code-block">
+                                -- Best Practice Implementation:<br><br>
+                                -- 1. Normalized Design<br>
+                                CREATE TABLE Customers (<br>
+                                &nbsp;&nbsp;CustomerID INT PRIMARY KEY,<br>
+                                &nbsp;&nbsp;Email VARCHAR(255) UNIQUE NOT NULL,<br>
+                                &nbsp;&nbsp;Name VARCHAR(100) NOT NULL<br>
+                                );<br><br>
+                                
+                                -- 2. Foreign Key Relationships<br>
+                                CREATE TABLE Orders (<br>
+                                &nbsp;&nbsp;OrderID INT PRIMARY KEY,<br>
+                                &nbsp;&nbsp;CustomerID INT REFERENCES Customers(CustomerID),<br>
+                                &nbsp;&nbsp;OrderDate DATE NOT NULL,<br>
+                                &nbsp;&nbsp;INDEX idx_customer (CustomerID)<br>
+                                );<br><br>
+                                
+                                -- 3. Strategic Indexing<br>
+                                CREATE INDEX idx_order_date ON Orders(OrderDate);<br>
+                                CREATE INDEX idx_customer_email ON Customers(Email);
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quiz Section -->
+                <div class="section" id="quiz-section">
+                    <div class="quiz-container">
+                        <div class="concept-header">
+                            <div class="concept-badge keys">Knowledge Check Quiz</div>
+                            <h2 style="color: #1a237e;">Test Your RDBMS Knowledge</h2>
+                        </div>
+                        
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="quiz-progress"></div>
+                        </div>
+                        
+                        <div id="quiz-questions">
+                            <!-- Questions will be loaded here -->
+                        </div>
+                        
+                        <div class="quiz-nav">
+                            <button class="submit-btn" onclick="prevQuestion()" style="background: #6c757d;">← Previous</button>
+                            <button class="submit-btn" onclick="nextQuestion()">Next →</button>
+                        </div>
+                        
+                        <div id="quiz-results" style="display: none;">
+                            <div class="score-display" id="quiz-score">0%</div>
+                            <h3 style="text-align: center; color: #1a237e;" id="quiz-message"></h3>
+                            <button class="submit-btn" onclick="retakeQuiz()" style="display: block; margin: 30px auto;">Retake Quiz</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current state
+        let currentConcept = 'fd';
+        let currentSection = 'concepts';
+        let selectedFDAnswers = [];
+        let selectedDealershipOptions = {};
+        let quizState = {
+            currentQuestion: 0,
+            answers: [],
+            score: 0
+        };
+
+        // Quiz questions
+        const quizQuestions = [
+            {
+                question: "What is a Functional Dependency?",
+                options: [
+                    "A relationship where one attribute uniquely determines another",
+                    "A relationship between two tables",
+                    "A type of database index",
+                    "A constraint on null values"
+                ],
+                correct: 0,
+                explanation: "FD: X → Y means if you know X, you can determine Y."
+            },
+            {
+                question: "Which notation represents a Multi-Valued Dependency?",
+                options: [
+                    "X → Y",
+                    "X →→ Y",
+                    "X ← Y",
+                    "X ↔ Y"
+                ],
+                correct: 1,
+                explanation: "MVD uses double arrow notation: X →→ Y"
+            },
+            {
+                question: "What makes a Candidate Key?",
+                options: [
+                    "Any column in a table",
+                    "A foreign key reference",
+                    "A minimal set that uniquely identifies rows",
+                    "An indexed column"
+                ],
+                correct: 2,
+                explanation: "Candidate key must be minimal and unique."
+            },
+            {
+                question: "Which normal form addresses MVDs?",
+                options: [
+                    "1NF",
+                    "2NF",
+                    "3NF",
+                    "4NF"
+                ],
+                correct: 3,
+                explanation: "Fourth Normal Form (4NF) deals with multi-valued dependencies."
+            },
+            {
+                question: "What's the main purpose of normalization?",
+                options: [
+                    "Improve query performance",
+                    "Reduce data redundancy",
+                    "Increase storage space",
+                    "Simplify SQL syntax"
+                ],
+                correct: 1,
+                explanation: "Normalization minimizes redundancy and improves integrity."
+            }
+        ];
+
+        // Initialize
+        function init() {
+            showConcept('fd');
+            showSection('concepts');
+            setupEventListeners();
+            loadQuiz();
+        }
+
+        // Show concept detail
+        function showConcept(concept) {
+            currentConcept = concept;
+            
+            // Hide all concept details
+            document.querySelectorAll('.concept-detail').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Show selected concept
+            document.getElementById(`${concept}-detail`).style.display = 'block';
+            
+            // Update active card
+            document.querySelectorAll('.concept-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.querySelector(`.concept-card.${concept}`).classList.add('active');
+        }
+
+        // Show section
+        function showSection(section) {
+            currentSection = section;
+            
+            // Update active nav button
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`${section}-section`).classList.add('active');
+        }
+
+        // FD Exercise
+        function selectOption(element, optionNum) {
+            element.classList.toggle('selected');
+            
+            const index = selectedFDAnswers.indexOf(optionNum);
+            if (index === -1) {
+                selectedFDAnswers.push(optionNum);
+            } else {
+                selectedFDAnswers.splice(index, 1);
+            }
+        }
+
+        function checkFDAnswers() {
+            const correctAnswers = [1, 2]; // ProductID → ProductName and SupplierID → SupplierName
+            const feedback = document.getElementById('fd-feedback');
+            
+            // Check if selected answers match correct ones
+            const isCorrect = selectedFDAnswers.length === correctAnswers.length &&
+                selectedFDAnswers.every(ans => correctAnswers.includes(ans));
+            
+            if (isCorrect) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = '✅ Correct!<br><small>ProductID → ProductName (one product ID has one name)<br>SupplierID → SupplierName (one supplier ID has one name)</small>';
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = '❌ Not quite right.<br><small>Correct answers: ProductID → ProductName and SupplierID → SupplierName<br>ProductName → Price is not FD (different products with same name could have different prices)<br>Category → SupplierID is not FD (same category could have multiple suppliers)</small>';
+            }
+            
+            // Clear selections
+            selectedFDAnswers = [];
+            document.querySelectorAll('.option.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+        }
+
+        // Car Dealership Exercise
+        function selectDealershipOption(element, questionId) {
+            // Clear other options for this question
+            const questionNum = questionId.charAt(0);
+            const options = element.parentElement.querySelectorAll('.option');
+            options.forEach(opt => {
+                if (opt !== element) {
+                    opt.classList.remove('selected');
+                }
+            });
+            
+            element.classList.toggle('selected');
+            selectedDealershipOptions[questionNum] = element.classList.contains('selected') ? questionId : null;
+        }
+
+        function checkDealershipAnswers() {
+            const correctAnswers = {
+                '1': '1a', // CarID → Make, Model, Year, Color, Price
+                '2': '2d'  // SaleID OR (CarID + CustomerID + SaleDate)
+            };
+            
+            let correctCount = 0;
+            let feedbackHtml = '<h4>Analysis Results:</h4>';
+            
+            for (const [question, correct] of Object.entries(correctAnswers)) {
+                const userAnswer = selectedDealershipOptions[question];
+                if (userAnswer === correct) {
+                    correctCount++;
+                    feedbackHtml += `<div style="color: #27ae60; margin: 10px 0;">✅ Question ${question}: Correct!</div>`;
+                } else {
+                    feedbackHtml += `<div style="color: #e74c3c; margin: 10px 0;">❌ Question ${question}: Needs review</div>`;
+                }
+            }
+            
+            const feedback = document.getElementById('dealership-feedback');
+            feedback.className = correctCount === 2 ? 'feedback correct' : 'feedback incorrect';
+            feedback.innerHTML = feedbackHtml;
+        }
+
+        // Quiz Functions
+        function loadQuiz() {
+            quizState = {
+                currentQuestion: 0,
+                answers: Array(quizQuestions.length).fill(null),
+                score: 0
+            };
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const question = quizQuestions[quizState.currentQuestion];
+            const container = document.getElementById('quiz-questions');
+            
+            let optionsHtml = '';
+            question.options.forEach((option, index) => {
+                const isSelected = quizState.answers[quizState.currentQuestion] === index;
+                optionsHtml += `
+                    <div class="option ${isSelected ? 'selected' : ''}" 
+                         onclick="selectQuizOption(${index})">
+                        ${option}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = `
+                <div class="question">
+                    <p><strong>Question ${quizState.currentQuestion + 1}/${quizQuestions.length}</strong></p>
+                    <p>${question.question}</p>
+                    <div class="options">${optionsHtml}</div>
+                </div>
+            `;
+            
+            // Update progress
+            const progress = ((quizState.currentQuestion + 1) / quizQuestions.length) * 100;
+            document.getElementById('quiz-progress').style.width = `${progress}%`;
+        }
+
+        function selectQuizOption(optionIndex) {
+            quizState.answers[quizState.currentQuestion] = optionIndex;
+            renderQuizQuestion();
+        }
+
+        function nextQuestion() {
+            if (quizState.currentQuestion < quizQuestions.length - 1) {
+                quizState.currentQuestion++;
+                renderQuizQuestion();
+            } else {
+                calculateScore();
+            }
+        }
+
+        function prevQuestion() {
+            if (quizState.currentQuestion > 0) {
+                quizState.currentQuestion--;
+                renderQuizQuestion();
+            }
+        }
+
+        function calculateScore() {
+            let correct = 0;
+            quizState.answers.forEach((answer, index) => {
+                if (answer === quizQuestions[index].correct) {
+                    correct++;
+                }
+            });
+            
+            quizState.score = Math.round((correct / quizQuestions.length) * 100);
+            
+            // Show results
+            document.getElementById('quiz-questions').style.display = 'none';
+            document.querySelector('.quiz-nav').style.display = 'none';
+            document.getElementById('quiz-results').style.display = 'block';
+            
+            document.getElementById('quiz-score').textContent = `${quizState.score}%`;
+            
+            let message = '';
+            if (quizState.score >= 80) {
+                message = 'Excellent! You have mastered RDBMS concepts! 🎉';
+            } else if (quizState.score >= 60) {
+                message = 'Good job! Review the concepts for better understanding. 👍';
+            } else {
+                message = 'Keep learning! Review the concepts section. 📚';
+            }
+            
+            document.getElementById('quiz-message').textContent = message;
+        }
+
+        function retakeQuiz() {
+            loadQuiz();
+            document.getElementById('quiz-questions').style.display = 'block';
+            document.querySelector('.quiz-nav').style.display = 'flex';
+            document.getElementById('quiz-results').style.display = 'none';
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Initialize with first concept
+            showConcept('fd');
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

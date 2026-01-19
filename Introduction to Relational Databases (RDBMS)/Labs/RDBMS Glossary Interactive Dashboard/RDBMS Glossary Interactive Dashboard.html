@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDBMS Glossary Interactive Dashboard</title>
+    <style>
+        :root {
+            --sql-color: #217346;
+            --rdbms-color: #2e75b6;
+            --model-color: #9b59b6;
+            --architecture-color: #e74c3c;
+            --tools-color: #f39c12;
+            --bg-light: #f8f9fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            padding: 30px 40px;
+        }
+        
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        /* Search & Filter */
+        .controls {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--rdbms-color);
+            box-shadow: 0 0 0 3px rgba(46, 117, 182, 0.2);
+        }
+        
+        .category-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .category-btn.active {
+            color: white;
+            border-color: transparent;
+        }
+        
+        .category-btn[data-category="sql"] { border-color: var(--sql-color); }
+        .category-btn[data-category="sql"].active { background: var(--sql-color); }
+        
+        .category-btn[data-category="rdbms"] { border-color: var(--rdbms-color); }
+        .category-btn[data-category="rdbms"].active { background: var(--rdbms-color); }
+        
+        .category-btn[data-category="model"] { border-color: var(--model-color); }
+        .category-btn[data-category="model"].active { background: var(--model-color); }
+        
+        .category-btn[data-category="architecture"] { border-color: var(--architecture-color); }
+        .category-btn[data-category="architecture"].active { background: var(--architecture-color); }
+        
+        .category-btn[data-category="tools"] { border-color: var(--tools-color); }
+        .category-btn[data-category="tools"].active { background: var(--tools-color); }
+        
+        /* Main Content */
+        .main-content {
+            display: flex;
+            min-height: 700px;
+        }
+        
+        /* Term List */
+        .term-list {
+            flex: 1;
+            padding: 20px;
+            background: white;
+            border-right: 1px solid #dee2e6;
+            overflow-y: auto;
+            max-height: 700px;
+        }
+        
+        .term-card {
+            background: white;
+            border-left: 4px solid;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .term-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .term-card.sql { border-left-color: var(--sql-color); }
+        .term-card.rdbms { border-left-color: var(--rdbms-color); }
+        .term-card.model { border-left-color: var(--model-color); }
+        .term-card.architecture { border-left-color: var(--architecture-color); }
+        .term-card.tools { border-left-color: var(--tools-color); }
+        
+        .term-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .term-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a237e;
+        }
+        
+        .term-category {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .term-card.sql .term-category { background: #e8f5e9; color: var(--sql-color); }
+        .term-card.rdbms .term-category { background: #e3f2fd; color: var(--rdbms-color); }
+        .term-card.model .term-category { background: #f3e5f5; color: var(--model-color); }
+        .term-card.architecture .term-category { background: #ffebee; color: var(--architecture-color); }
+        .term-card.tools .term-category { background: #fff3e0; color: var(--tools-color); }
+        
+        .term-definition {
+            color: #555;
+            line-height: 1.5;
+            font-size: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        /* Term Detail */
+        .term-detail {
+            flex: 2;
+            padding: 30px;
+            background: #f8f9fa;
+            min-height: 700px;
+        }
+        
+        .detail-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            height: 100%;
+        }
+        
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f1f1;
+        }
+        
+        .detail-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a237e;
+        }
+        
+        .detail-badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .sql .detail-badge { background: var(--sql-color); }
+        .rdbms .detail-badge { background: var(--rdbms-color); }
+        .model .detail-badge { background: var(--model-color); }
+        .architecture .detail-badge { background: var(--architecture-color); }
+        .tools .detail-badge { background: var(--tools-color); }
+        
+        .definition-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid;
+        }
+        
+        .sql .definition-box { border-left-color: var(--sql-color); }
+        .rdbms .definition-box { border-left-color: var(--rdbms-color); }
+        .model .definition-box { border-left-color: var(--model-color); }
+        .architecture .definition-box { border-left-color: var(--architecture-color); }
+        .tools .definition-box { border-left-color: var(--tools-color); }
+        
+        .definition-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .metadata {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .meta-item {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .meta-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .meta-value {
+            font-weight: 600;
+            color: #1a237e;
+        }
+        
+        .example {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+            border: 1px dashed #ddd;
+        }
+        
+        .example-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+        
+        /* Visualizations */
+        .visualizations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .viz-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .viz-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1a237e;
+        }
+        
+        .viz-diagram {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .circle {
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--rdbms-color);
+            border-radius: 50%;
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .term-list {
+                border-right: none;
+                border-bottom: 1px solid #dee2e6;
+                max-height: 400px;
+            }
+            
+            .term-detail {
+                min-height: auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+            
+            .title {
+                font-size: 24px;
+            }
+            
+            .stats {
+                gap: 15px;
+            }
+            
+            .controls {
+                padding: 15px;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .term-detail {
+                padding: 15px;
+            }
+            
+            .detail-card {
+                padding: 20px;
+            }
+            
+            .detail-title {
+                font-size: 24px;
+            }
+            
+            .metadata {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <div class="title">RDBMS Glossary Interactive Dashboard</div>
+            <div class="subtitle">Comprehensive guide to relational database concepts, terms, and technologies</div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number" id="total-terms">180+</div>
+                    <div class="stat-label">Database Terms</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">Database Systems</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">SQL Types</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search & Filter -->
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search for database terms...">
+                <button class="category-btn" onclick="clearFilters()">Clear Filters</button>
+            </div>
+            
+            <div class="category-filters">
+                <button class="category-btn active" data-category="all" onclick="filterTerms('all')">All Terms</button>
+                <button class="category-btn" data-category="sql" onclick="filterTerms('sql')">SQL & Queries</button>
+                <button class="category-btn" data-category="rdbms" onclick="filterTerms('rdbms')">RDBMS Concepts</button>
+                <button class="category-btn" data-category="model" onclick="filterTerms('model')">Data Models</button>
+                <button class="category-btn" data-category="architecture" onclick="filterTerms('architecture')">Architecture</button>
+                <button class="category-btn" data-category="tools" onclick="filterTerms('tools')">Tools & Systems</button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Term List -->
+            <div class="term-list" id="termList">
+                <!-- Terms will be loaded here dynamically -->
+            </div>
+            
+            <!-- Term Detail View -->
+            <div class="term-detail" id="termDetail">
+                <div class="detail-card">
+                    <div class="detail-header">
+                        <div class="detail-title">Select a term to view details</div>
+                    </div>
+                    
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <div style="font-size: 60px; margin-bottom: 20px;">📚</div>
+                        <h3 style="color: #666; margin-bottom: 15px;">Welcome to RDBMS Glossary</h3>
+                        <p style="color: #777; max-width: 600px; margin: 0 auto;">
+                            Click on any term from the list to see detailed information, examples, and visual explanations. Use the filters above to explore specific categories.
+                        </p>
+                    </div>
+                    
+                    <!-- Quick Stats -->
+                    <div class="visualizations">
+                        <div class="viz-card">
+                            <div class="viz-title">Database Types</div>
+                            <div class="viz-diagram">
+                                <div class="circle" style="top: 20px; left: 20px; border-color: var(--sql-color);">SQL</div>
+                                <div class="circle" style="top: 20px; left: 120px; border-color: var(--rdbms-color);">NoSQL</div>
+                                <div class="circle" style="top: 120px; left: 70px; border-color: var(--model-color);">Graph</div>
+                            </div>
+                        </div>
+                        
+                        <div class="viz-card">
+                            <div class="viz-title">SQL Statements</div>
+                            <div style="margin-top: 20px;">
+                                <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                                    <span>DDL</span>
+                                    <span style="font-weight: 600; color: var(--sql-color);">CREATE, ALTER, DROP</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                                    <span>DML</span>
+                                    <span style="font-weight: 600; color: var(--sql-color);">SELECT, INSERT, UPDATE</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                                    <span>DCL</span>
+                                    <span style="font-weight: 600; color: var(--sql-color);">GRANT, REVOKE</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample glossary data from the provided content
+        const glossaryData = [
+            {
+                term: "SQL",
+                definition: "Structured Query Language - Standard language for managing and manipulating relational databases.",
+                category: "sql",
+                example: "SELECT * FROM users WHERE age > 21;",
+                video: "Types of SQL Statements (DDL vs DML)",
+                importance: "Core",
+                related: ["DDL", "DML", "Query"]
+            },
+            {
+                term: "RDBMS",
+                definition: "Relational Database Management System - Software that manages relational databases and their supporting systems.",
+                category: "rdbms",
+                example: "MySQL, PostgreSQL, Oracle, SQL Server",
+                video: "Review of Data Fundamentals",
+                importance: "Core",
+                related: ["Database", "Relational Model", "SQL"]
+            },
+            {
+                term: "ERD",
+                definition: "Entity-Relationship Diagram - Graphical representation of entities, their attributes, and relationships in a database.",
+                category: "model",
+                example: "Visual diagram showing relationships between Customers, Orders, and Products",
+                video: "Mapping Entities to Tables",
+                importance: "High",
+                related: ["Entity", "Relationship", "Data Model"]
+            },
+            {
+                term: "DDL",
+                definition: "Data Definition Language - Used for defining, creating, modifying, or dropping database objects.",
+                category: "sql",
+                example: "CREATE TABLE users (id INT PRIMARY KEY, name VARCHAR(100));",
+                video: "Types of SQL Statements (DDL vs DML)",
+                importance: "Core",
+                related: ["DML", "CREATE", "ALTER", "DROP"]
+            },
+            {
+                term: "DML",
+                definition: "Data Manipulation Language - Used for reading, inserting, updating, and deleting data in tables.",
+                category: "sql",
+                example: "INSERT INTO users (id, name) VALUES (1, 'John');",
+                video: "Types of SQL Statements (DDL vs DML)",
+                importance: "Core",
+                related: ["DDL", "SELECT", "INSERT", "UPDATE", "DELETE"]
+            },
+            {
+                term: "Normalization",
+                definition: "Process of organizing data in tables to avoid redundancy and inconsistencies.",
+                category: "model",
+                example: "Splitting a table with customer orders into customers and orders tables",
+                video: "Normalization",
+                importance: "High",
+                related: ["1NF", "2NF", "3NF", "Entity"]
+            },
+            {
+                term: "Primary Key",
+                definition: "Unique identifier for each tuple in a relation. Cannot be null.",
+                category: "rdbms",
+                example: "id INT PRIMARY KEY in a users table",
+                video: "Relational Model Concepts",
+                importance: "Core",
+                related: ["Foreign Key", "Unique Constraint", "Entity"]
+            },
+            {
+                term: "Foreign Key",
+                definition: "Attribute in one relation referencing the primary key of another relation, representing a relationship.",
+                category: "rdbms",
+                example: "customer_id INT REFERENCES customers(id)",
+                video: "Relational Model Concepts",
+                importance: "Core",
+                related: ["Primary Key", "Referential Integrity", "Relationship"]
+            },
+            {
+                term: "Index",
+                definition: "Data structure that enhances the speed of data retrieval by providing pointers to specific data locations.",
+                category: "tools",
+                example: "CREATE INDEX idx_name ON users(name);",
+                video: "Loading Data",
+                importance: "High",
+                related: ["Query Optimization", "Performance", "B-Tree"]
+            },
+            {
+                term: "ACID",
+                definition: "Atomicity, Consistency, Isolation, Durability - Properties that guarantee reliable transaction processing.",
+                category: "rdbms",
+                example: "Ensuring bank transfer transactions either complete fully or not at all",
+                video: "Not specified",
+                importance: "Core",
+                related: ["Transaction", "Commit", "Rollback"]
+            },
+            {
+                term: "OLTP",
+                definition: "Online Transaction Processing - System optimized for handling high-volume, day-to-day operational data.",
+                category: "architecture",
+                example: "Banking transaction system, e-commerce orders",
+                video: "Review of Data Fundamentals",
+                importance: "High",
+                related: ["OLAP", "Transaction", "Real-time"]
+            },
+            {
+                term: "OLAP",
+                definition: "Online Analytical Processing - System optimized for complex data analysis.",
+                category: "architecture",
+                example: "Business intelligence reports, data warehouses",
+                video: "Review of Data Fundamentals",
+                importance: "High",
+                related: ["OLTP", "Data Warehouse", "Business Intelligence"]
+            },
+            {
+                term: "MySQL",
+                definition: "Open-source object-relational database management system (ORDBMS).",
+                category: "tools",
+                example: "Popular for web applications using LAMP stack",
+                video: "MySQL",
+                importance: "High",
+                related: ["PostgreSQL", "MariaDB", "Open Source"]
+            },
+            {
+                term: "PostgreSQL",
+                definition: "Open-source object-relational database management system (ORDBMS).",
+                category: "tools",
+                example: "Supports JSON, full-text search, and advanced data types",
+                video: "PostgreSQL",
+                importance: "High",
+                related: ["MySQL", "Open Source", "ORDBMS"]
+            },
+            {
+                term: "JSON",
+                definition: "JavaScript Object Notation - Lightweight language for data exchange, popular for API responses and web services.",
+                category: "model",
+                example: '{"name": "John", "age": 30, "city": "New York"}',
+                video: "Review of Data Fundamentals",
+                importance: "Medium",
+                related: ["XML", "Semi-structured", "API"]
+            },
+            {
+                term: "Cloud Database",
+                definition: "Database service hosted and accessed through a cloud platform.",
+                category: "architecture",
+                example: "Amazon RDS, Google Cloud SQL, Azure SQL Database",
+                video: "Introduction to Relational Database Offerings",
+                importance: "High",
+                related: ["SaaS", "Scalability", "Cloud"]
+            },
+            {
+                term: "Data Warehouse",
+                definition: "Central repository of integrated data from multiple sources for reporting and analysis.",
+                category: "architecture",
+                example: "Stores historical data for business intelligence",
+                video: "Not specified",
+                importance: "High",
+                related: ["OLAP", "ETL", "Business Intelligence"]
+            },
+            {
+                term: "ORM",
+                definition: "Object-Relational Mapping - Framework that simplifies database access by masking SQL complexity.",
+                category: "tools",
+                example: "Hibernate (Java), Django ORM (Python), Entity Framework (C#)",
+                video: "Database Usage Patterns",
+                importance: "Medium",
+                related: ["API", "Application Development", "Abstraction"]
+            },
+            {
+                term: "Sharding",
+                definition: "Placement of partitions on separate nodes with dedicated compute resources for parallel processing and scalability.",
+                category: "architecture",
+                example: "Distributing user data across multiple database servers by region",
+                video: "Distributed Databases",
+                importance: "Medium",
+                related: ["Partition", "Scalability", "Distributed Database"]
+            },
+            {
+                term: "Replication",
+                definition: "Copying data to one or more replicas for redundancy and improved read performance.",
+                category: "architecture",
+                example: "Creating read replicas of a database for load balancing",
+                video: "MySQL",
+                importance: "Medium",
+                related: ["High Availability", "Backup", "Failover"]
+            },
+            {
+                term: "Transaction",
+                definition: "A sequence of database operations that are executed as a single logical unit of work.",
+                category: "rdbms",
+                example: "BEGIN; UPDATE accounts SET balance = balance - 100 WHERE id = 1; UPDATE accounts SET balance = balance + 100 WHERE id = 2; COMMIT;",
+                video: "Not specified",
+                importance: "Core",
+                related: ["ACID", "Commit", "Rollback"]
+            }
+        ];
+
+        let currentTerm = null;
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        // Initialize the glossary
+        function initGlossary() {
+            renderTermList(glossaryData);
+            updateStats();
+            setupEventListeners();
+        }
+
+        // Render term list
+        function renderTermList(terms) {
+            const container = document.getElementById('termList');
+            container.innerHTML = '';
+            
+            const filteredTerms = terms.filter(term => {
+                const matchesSearch = searchQuery === '' || 
+                    term.term.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    term.definition.toLowerCase().includes(searchQuery.toLowerCase());
+                
+                const matchesCategory = currentFilter === 'all' || term.category === currentFilter;
+                
+                return matchesSearch && matchesCategory;
+            });
+            
+            if (filteredTerms.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: #666;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
+                        <h3>No terms found</h3>
+                        <p>Try a different search term or filter</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredTerms.forEach(term => {
+                const termCard = document.createElement('div');
+                termCard.className = `term-card ${term.category}`;
+                termCard.onclick = () => showTermDetail(term);
+                
+                termCard.innerHTML = `
+                    <div class="term-header">
+                        <div class="term-name">${term.term}</div>
+                        <div class="term-category">${term.category.toUpperCase()}</div>
+                    </div>
+                    <div class="term-definition">${term.definition}</div>
+                `;
+                
+                container.appendChild(termCard);
+            });
+        }
+
+        // Show term detail view
+        function showTermDetail(term) {
+            currentTerm = term;
+            
+            const detailHtml = `
+                <div class="detail-card ${term.category}">
+                    <div class="detail-header">
+                        <div class="detail-title">${term.term}</div>
+                        <div class="detail-badge">${term.category.toUpperCase()}</div>
+                    </div>
+                    
+                    <div class="definition-box">
+                        <div class="definition-text">${term.definition}</div>
+                    </div>
+                    
+                    <div class="metadata">
+                        <div class="meta-item">
+                            <div class="meta-label">Importance</div>
+                            <div class="meta-value">${term.importance}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Video Reference</div>
+                            <div class="meta-value">${term.video || 'Multiple videos'}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Category</div>
+                            <div class="meta-value" style="text-transform: uppercase;">${term.category}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Related Terms</div>
+                            <div class="meta-value">${term.related.join(', ')}</div>
+                        </div>
+                    </div>
+                    
+                    ${term.example ? `
+                        <div class="example">
+                            <div class="example-title">
+                                <span>📝 Example</span>
+                            </div>
+                            <div class="code-block">${term.example}</div>
+                        </div>
+                    ` : ''}
+                    
+                    <!-- Visual Explanation -->
+                    <div class="visualizations">
+                        ${getVisualization(term)}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('termDetail').innerHTML = detailHtml;
+        }
+
+        // Get appropriate visualization for term
+        function getVisualization(term) {
+            const viz = {
+                'sql': `
+                    <div class="viz-card">
+                        <div class="viz-title">SQL Statement Types</div>
+                        <div style="margin-top: 20px;">
+                            <div style="display: flex; align-items: center; margin: 10px 0;">
+                                <div style="width: 20px; height: 20px; background: var(--sql-color); margin-right: 10px; border-radius: 3px;"></div>
+                                <span>DDL: Define structure</span>
+                            </div>
+                            <div style="display: flex; align-items: center; margin: 10px 0;">
+                                <div style="width: 20px; height: 20px; background: var(--sql-color); margin-right: 10px; border-radius: 3px; opacity: 0.8;"></div>
+                                <span>DML: Manipulate data</span>
+                            </div>
+                            <div style="display: flex; align-items: center; margin: 10px 0;">
+                                <div style="width: 20px; height: 20px; background: var(--sql-color); margin-right: 10px; border-radius: 3px; opacity: 0.6;"></div>
+                                <span>DCL: Control access</span>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                'rdbms': `
+                    <div class="viz-card">
+                        <div class="viz-title">Database Relationships</div>
+                        <div class="viz-diagram">
+                            <div class="circle" style="top: 50px; left: 50px; border-color: var(--rdbms-color);">Table A</div>
+                            <div style="position: absolute; top: 100px; left: 150px; width: 50px; height: 2px; background: #666; transform: rotate(45deg);"></div>
+                            <div class="circle" style="top: 150px; left: 200px; border-color: var(--rdbms-color);">Table B</div>
+                        </div>
+                    </div>
+                `,
+                'model': `
+                    <div class="viz-card">
+                        <div class="viz-title">Data Model Levels</div>
+                        <div style="margin-top: 20px;">
+                            <div style="background: #e3f2fd; padding: 10px; margin: 5px 0; border-radius: 4px;">
+                                Conceptual: Entities & Relationships
+                            </div>
+                            <div style="background: #e8f5e9; padding: 10px; margin: 5px 0; border-radius: 4px;">
+                                Logical: Tables & Columns
+                            </div>
+                            <div style="background: #fff3e0; padding: 10px; margin: 5px 0; border-radius: 4px;">
+                                Physical: Storage & Indexes
+                            </div>
+                        </div>
+                    </div>
+                `,
+                'architecture': `
+                    <div class="viz-card">
+                        <div class="viz-title">System Architecture</div>
+                        <div style="margin-top: 20px; text-align: left;">
+                            <div style="display: flex; align-items: center; margin: 8px 0;">
+                                <div style="width: 12px; height: 12px; background: var(--architecture-color); margin-right: 10px; border-radius: 50%;"></div>
+                                <span>Client Tier</span>
+                            </div>
+                            <div style="display: flex; align-items: center; margin: 8px 0;">
+                                <div style="width: 12px; height: 12px; background: var(--architecture-color); margin-right: 10px; border-radius: 50%; opacity: 0.8;"></div>
+                                <span>Application Tier</span>
+                            </div>
+                            <div style="display: flex; align-items: center; margin: 8px 0;">
+                                <div style="width: 12px; height: 12px; background: var(--architecture-color); margin-right: 10px; border-radius: 50%; opacity: 0.6;"></div>
+                                <span>Database Tier</span>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                'tools': `
+                    <div class="viz-card">
+                        <div class="viz-title">Database Tools Stack</div>
+                        <div style="margin-top: 20px;">
+                            <div style="font-size: 12px; margin: 5px 0;">Management: pgAdmin, phpMyAdmin</div>
+                            <div style="font-size: 12px; margin: 5px 0;">Development: ORMs, CLIs</div>
+                            <div style="font-size: 12px; margin: 5px 0;">Analysis: PowerBI, Tableau</div>
+                            <div style="font-size: 12px; margin: 5px 0;">Monitoring: Performance dashboards</div>
+                        </div>
+                    </div>
+                `
+            };
+            
+            return viz[term.category] || viz.rdbms;
+        }
+
+        // Filter terms by category
+        function filterTerms(category) {
+            currentFilter = category;
+            
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderTermList(glossaryData);
+        }
+
+        // Clear all filters
+        function clearFilters() {
+            searchQuery = '';
+            currentFilter = 'all';
+            
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.category === 'all') {
+                    btn.classList.add('active');
+                }
+            });
+            
+            renderTermList(glossaryData);
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalTerms = glossaryData.length;
+            document.getElementById('total-terms').textContent = `${totalTerms}+`;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search input
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                searchQuery = e.target.value;
+                renderTermList(glossaryData);
+            });
+            
+            // Initial term selection
+            if (glossaryData.length > 0) {
+                setTimeout(() => {
+                    showTermDetail(glossaryData[0]);
+                }, 100);
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initGlossary);
+    </script>
+</body>
+</html>
