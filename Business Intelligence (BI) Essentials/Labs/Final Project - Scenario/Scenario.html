@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retail Store BI Analysis - Final Project</title>
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #334155;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .project-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Header */
+        .project-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .project-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .project-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        /* Dashboard Section */
+        .dashboard-section {
+            padding: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .section-title {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--secondary-color);
+        }
+        
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            border-top: 4px solid var(--secondary-color);
+            transition: transform 0.3s;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .kpi-card.warning {
+            border-top-color: var(--warning-color);
+        }
+        
+        .kpi-card.danger {
+            border-top-color: var(--danger-color);
+        }
+        
+        .kpi-card.success {
+            border-top-color: var(--accent-color);
+        }
+        
+        .kpi-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .kpi-label {
+            font-size: 16px;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+        
+        .kpi-change {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .positive {
+            color: var(--accent-color);
+        }
+        
+        .negative {
+            color: var(--danger-color);
+        }
+        
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Mock Chart Visuals */
+        .mock-chart {
+            height: 250px;
+            background: linear-gradient(to bottom, #f1f5f9, #e2e8f0);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 80%;
+            padding: 20px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .bar {
+            width: 40px;
+            background: var(--secondary-color);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+        }
+        
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        
+        .bar.furniture { background: #3b82f6; height: 70%; }
+        .bar.office-supplies { background: #10b981; height: 85%; }
+        .bar.technology { background: #8b5cf6; height: 95%; }
+        .bar.electronics { background: #f59e0b; height: 60%; }
+        
+        /* Insights Section */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .insight-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            border-left: 4px solid;
+        }
+        
+        .insight-card.positive { border-left-color: var(--accent-color); }
+        .insight-card.warning { border-left-color: var(--warning-color); }
+        .insight-card.danger { border-left-color: var(--danger-color); }
+        
+        .insight-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .insight-text {
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        /* Data Table */
+        .data-table-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .data-table th {
+            background: var(--light-bg);
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table tr:hover {
+            background: var(--light-bg);
+        }
+        
+        /* Process Steps */
+        .process-steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .process-step {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 25px 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        /* Footer */
+        .project-footer {
+            background: var(--light-bg);
+            padding: 25px 40px;
+            text-align: center;
+            color: var(--text-color);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        @media (max-width: 768px) {
+            .project-header {
+                padding: 30px 20px;
+            }
+            
+            .dashboard-section {
+                padding: 20px;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .process-steps {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="project-container">
+        <!-- Project Header -->
+        <header class="project-header">
+            <h1 class="project-title">Retail Store BI Analysis - Final Project</h1>
+            <p class="project-subtitle">Office Supplies Retailer - United States Market Analysis</p>
+        </header>
+        
+        <!-- BI Process Steps -->
+        <section class="dashboard-section">
+            <h2 class="section-title">
+                📊 Business Intelligence Process
+            </h2>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Data Gathering</h3>
+                    <p>Combine customer, product, and order data from multiple sources</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Data Cleaning</h3>
+                    <p>Remove duplicates, handle nulls, normalize formats</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Data Mining</h3>
+                    <p>Discover patterns, correlations, and insights</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Visualization</h3>
+                    <p>Create charts and dashboards in Power BI</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">5</div>
+                    <h3 class="step-title">Communication</h3>
+                    <p>Present findings to stakeholders</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Executive Dashboard -->
+        <section class="dashboard-section">
+            <h2 class="section-title">
+                📈 Executive Dashboard
+            </h2>
+            
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card success">
+                    <div class="kpi-value">$4.2M</div>
+                    <div class="kpi-label">Total Revenue</div>
+                    <div class="kpi-change positive">↑ 12.5% vs last quarter</div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-value">$892K</div>
+                    <div class="kpi-label">Total Profit</div>
+                    <div class="kpi-change positive">↑ 8.3% vs last quarter</div>
+                </div>
+                
+                <div class="kpi-card warning">
+                    <div class="kpi-value">21.2%</div>
+                    <div class="kpi-label">Profit Margin</div>
+                    <div class="kpi-change negative">↓ 0.8% vs last quarter</div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-value">18,452</div>
+                    <div class="kpi-label">Total Orders</div>
+                    <div class="kpi-change positive">↑ 5.7% vs last quarter</div>
+                </div>
+            </div>
+            
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3 class="chart-title">📦 Sales by Product Category</h3>
+                    <div class="mock-chart">
+                        <div class="chart-bars">
+                            <div class="bar furniture">
+                                <div class="bar-label">Furniture</div>
+                            </div>
+                            <div class="bar office-supplies">
+                                <div class="bar-label">Office Supplies</div>
+                            </div>
+                            <div class="bar technology">
+                                <div class="bar-label">Technology</div>
+                            </div>
+                            <div class="bar electronics">
+                                <div class="bar-label">Electronics</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; color: var(--text-color); margin-top: 10px; font-size: 14px;">
+                        Technology products lead sales, while furniture needs improvement
+                    </p>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 class="chart-title">🗺️ Revenue by State (Top 10)</h3>
+                    <div class="mock-chart" style="background: linear-gradient(to right, #f1f5f9, #e2e8f0);">
+                        <div class="chart-bars" style="justify-content: flex-start; gap: 15px; padding-left: 30px;">
+                            <div class="bar" style="background: #3b82f6; height: 95%; width: 30px;">
+                                <div class="bar-label">CA</div>
+                            </div>
+                            <div class="bar" style="background: #3b82f6; height: 85%; width: 30px;">
+                                <div class="bar-label">NY</div>
+                            </div>
+                            <div class="bar" style="background: #3b82f6; height: 75%; width: 30px;">
+                                <div class="bar-label">TX</div>
+                            </div>
+                            <div class="bar" style="background: #3b82f6; height: 70%; width: 30px;">
+                                <div class="bar-label">FL</div>
+                            </div>
+                            <div class="bar" style="background: #3b82f6; height: 65%; width: 30px;">
+                                <div class="bar-label">IL</div>
+                            </div>
+                            <div class="bar" style="background: #10b981; height: 60%; width: 30px;">
+                                <div class="bar-label">PA</div>
+                            </div>
+                            <div class="bar" style="background: #10b981; height: 55%; width: 30px;">
+                                <div class="bar-label">OH</div>
+                            </div>
+                            <div class="bar" style="background: #f59e0b; height: 50%; width: 30px;">
+                                <div class="bar-label">GA</div>
+                            </div>
+                            <div class="bar" style="background: #f59e0b; height: 45%; width: 30px;">
+                                <div class="bar-label">NC</div>
+                            </div>
+                            <div class="bar" style="background: #ef4444; height: 40%; width: 30px;">
+                                <div class="bar-label">MI</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; color: var(--text-color); margin-top: 10px; font-size: 14px;">
+                        California leads revenue generation, Midwestern states underperforming
+                    </p>
+                </div>
+            </div>
+            
+            <!-- More Charts -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3 class="chart-title">📊 Profit Margin by Sub-Category</h3>
+                    <div class="mock-chart" style="height: 300px;">
+                        <div class="chart-bars" style="height: 85%;">
+                            <div class="bar" style="background: #10b981; height: 90%; width: 35px;">
+                                <div class="bar-label">Copiers</div>
+                            </div>
+                            <div class="bar" style="background: #10b981; height: 75%; width: 35px;">
+                                <div class="bar-label">Phones</div>
+                            </div>
+                            <div class="bar" style="background: #f59e0b; height: 60%; width: 35px;">
+                                <div class="bar-label">Accessories</div>
+                            </div>
+                            <div class="bar" style="background: #f59e0b; height: 55%; width: 35px;">
+                                <div class="bar-label">Paper</div>
+                            </div>
+                            <div class="bar" style="background: #ef4444; height: 40%; width: 35px;">
+                                <div class="bar-label">Tables</div>
+                            </div>
+                            <div class="bar" style="background: #ef4444; height: 30%; width: 35px;">
+                                <div class="bar-label">Bookcases</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 class="chart-title">📅 Quarterly Sales Trend</h3>
+                    <div class="mock-chart" style="background: linear-gradient(to bottom, #f1f5f9, #e2e8f0);">
+                        <!-- Simplified trend line visualization -->
+                        <div style="position: relative; height: 100%;">
+                            <div style="position: absolute; top: 30%; left: 10%; right: 10%; bottom: 20%;">
+                                <div style="position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background: #cbd5e0;"></div>
+                                <div style="position: absolute; left: 0; bottom: 0; width: 20%; height: 40%; background: #3b82f6;"></div>
+                                <div style="position: absolute; left: 25%; bottom: 0; width: 20%; height: 60%; background: #3b82f6;"></div>
+                                <div style="position: absolute; left: 50%; bottom: 0; width: 20%; height: 85%; background: #3b82f6;"></div>
+                                <div style="position: absolute; left: 75%; bottom: 0; width: 20%; height: 95%; background: #3b82f6;"></div>
+                                <div style="position: absolute; left: 0; bottom: 40%; transform: translateX(-50%);">Q1</div>
+                                <div style="position: absolute; left: 25%; bottom: 60%; transform: translateX(-50%);">Q2</div>
+                                <div style="position: absolute; left: 50%; bottom: 85%; transform: translateX(-50%);">Q3</div>
+                                <div style="position: absolute; left: 75%; bottom: 95%; transform: translateX(-50%);">Q4</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; color: var(--text-color); margin-top: 10px; font-size: 14px;">
+                        Consistent quarter-over-quarter growth observed
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Key Insights -->
+        <section class="dashboard-section">
+            <h2 class="section-title">
+                💡 Key Insights & Recommendations
+            </h2>
+            
+            <div class="insights-grid">
+                <div class="insight-card positive">
+                    <h3 class="insight-title">✅ Top Performing Segment</h3>
+                    <p class="insight-text">
+                        <strong>Technology products generate 38% of total revenue</strong> with copiers and phones having the highest profit margins (35%+). Recommend increasing inventory and marketing focus on these categories.
+                    </p>
+                </div>
+                
+                <div class="insight-card warning">
+                    <h3 class="insight-title">⚠️ Underperforming Category</h3>
+                    <p class="insight-text">
+                        <strong>Furniture sales show only 18% profit margin</strong>, significantly below company average. Tables and bookcases are particularly problematic with negative margins in some regions.
+                    </p>
+                </div>
+                
+                <div class="insight-card positive">
+                    <h3 class="insight-title">📈 Growth Opportunity</h3>
+                    <p class="insight-text">
+                        <strong>Office supplies show consistent growth</strong> (15% YoY) with stable margins. Recommend expanding the premium office supplies line in Western states where demand is highest.
+                    </p>
+                </div>
+                
+                <div class="insight-card danger">
+                    <h3 class="insight-title">🚨 Regional Concern</h3>
+                    <p class="insight-text">
+                        <strong>Midwestern states underperform</strong> by 22% compared to coastal regions. Michigan and Ohio show declining sales in furniture and electronics. Recommend regional promotional campaigns.
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Data Sample -->
+        <section class="dashboard-section">
+            <h2 class="section-title">
+                📋 Data Sample & Analysis
+            </h2>
+            
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Product Category</th>
+                            <th>Sub-Category</th>
+                            <th>State</th>
+                            <th>Sales</th>
+                            <th>Profit</th>
+                            <th>Quantity</th>
+                            <th>Profit Margin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CA-2023-152156</td>
+                            <td>Technology</td>
+                            <td>Phones</td>
+                            <td>California</td>
+                            <td>$489.48</td>
+                            <td>$146.84</td>
+                            <td>3</td>
+                            <td class="positive">30.0%</td>
+                        </tr>
+                        <tr>
+                            <td>CA-2023-152157</td>
+                            <td>Furniture</td>
+                            <td>Chairs</td>
+                            <td>New York</td>
+                            <td>$322.99</td>
+                            <td>$51.68</td>
+                            <td>1</td>
+                            <td>16.0%</td>
+                        </tr>
+                        <tr>
+                            <td>CA-2023-152158</td>
+                            <td>Office Supplies</td>
+                            <td>Storage</td>
+                            <td>Texas</td>
+                            <td>$154.90</td>
+                            <td>$23.24</td>
+                            <td>2</td>
+                            <td>15.0%</td>
+                        </tr>
+                        <tr>
+                            <td>CA-2023-152159</td>
+                            <td>Technology</td>
+                            <td>Copiers</td>
+                            <td>California</td>
+                            <td>$2,199.99</td>
+                            <td>$769.50</td>
+                            <td>1</td>
+                            <td class="positive">35.0%</td>
+                        </tr>
+                        <tr>
+                            <td>CA-2023-152160</td>
+                            <td>Furniture</td>
+                            <td>Tables</td>
+                            <td>Michigan</td>
+                            <td>$899.99</td>
+                            <td>-$45.00</td>
+                            <td>1</td>
+                            <td class="negative">-5.0%</td>
+                        </tr>
+                        <tr>
+                            <td>CA-2023-152161</td>
+                            <td>Office Supplies</td>
+                            <td>Paper</td>
+                            <td>Florida</td>
+                            <td>$245.50</td>
+                            <td>$61.38</td>
+                            <td>5</td>
+                            <td>25.0%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Recommendations -->
+        <section class="dashboard-section">
+            <h2 class="section-title">
+                🎯 Strategic Recommendations
+            </h2>
+            
+            <div class="insights-grid">
+                <div class="insight-card" style="border-left-color: var(--primary-color);">
+                    <h3 class="insight-title">1. Product Strategy</h3>
+                    <p class="insight-text">
+                        • Increase inventory allocation for Technology products by 25%<br>
+                        • Review and renegotiate Furniture supplier contracts<br>
+                        • Introduce premium office supplies line in high-performing regions
+                    </p>
+                </div>
+                
+                <div class="insight-card" style="border-left-color: var(--secondary-color);">
+                    <h3 class="insight-title">2. Regional Focus</h3>
+                    <p class="insight-text">
+                        • Launch targeted marketing campaigns in Midwestern states<br>
+                        • Expand distribution centers in California and Texas<br>
+                        • Analyze competitor pricing in underperforming regions
+                    </p>
+                </div>
+                
+                <div class="insight-card" style="border-left-color: var(--accent-color);">
+                    <h3 class="insight-title">3. Operational Improvements</h3>
+                    <p class="insight-text">
+                        • Implement dynamic pricing for furniture products<br>
+                        • Enhance online shopping experience for office supplies<br>
+                        • Train sales team on high-margin product features
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="project-footer">
+            <p><strong>Business Intelligence Analyst Report</strong> | Retail Store Performance Analysis</p>
+            <p style="margin-top: 10px; font-size: 14px; opacity: 0.8;">
+                Prepared using Power BI, Excel, and data visualization best practices<br>
+                Data analyzed: Customer, Product, and Order datasets (Q1-Q4 2023)
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        // Simple interactivity for the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to charts
+            const bars = document.querySelectorAll('.bar');
+            bars.forEach(bar => {
+                bar.addEventListener('mouseover', function() {
+                    this.style.opacity = '0.8';
+                    this.style.transform = 'scale(1.05)';
+                });
+                
+                bar.addEventListener('mouseout', function() {
+                    this.style.opacity = '1';
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Print functionality
+            console.log("To save this report as PDF: Press Ctrl+P (Cmd+P on Mac) and choose 'Save as PDF'");
+            
+            // Auto-update date if needed
+            const currentYear = new Date().getFullYear();
+            const yearElements = document.querySelectorAll('[data-year]');
+            yearElements.forEach(el => {
+                if (el.textContent.includes('2023')) {
+                    el.textContent = el.textContent.replace('2023', currentYear);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

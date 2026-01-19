@@ -1,0 +1,254 @@
+/* style.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+
+/* Header */
+.header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 40px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.header p {
+    font-size: 18px;
+    opacity: 0.9;
+    margin-bottom: 15px;
+}
+
+.stats {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+/* Navigation */
+.nav {
+    padding: 20px 40px;
+    background: #f7fafc;
+    border-bottom: 1px solid #cbd5e0;
+}
+
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.nav-link {
+    padding: 10px 20px;
+    background: white;
+    border: 2px solid #cbd5e0;
+    border-radius: 25px;
+    text-decoration: none;
+    color: #2d3748;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    border-color: #3182ce;
+    color: #3182ce;
+}
+
+.nav-link.active {
+    background: #3182ce;
+    color: white;
+    border-color: #3182ce;
+}
+
+/* Modules Grid */
+.modules-grid {
+    padding: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.module-card {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: left;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-top: 5px solid;
+    transition: transform 0.3s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.module-number {
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    background: #3182ce;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.module-card h3 {
+    color: #1a365d;
+    margin: 10px 0 15px 0;
+    font-size: 22px;
+}
+
+.module-card p {
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.module-stats {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 15px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 14px;
+    color: #718096;
+}
+
+/* Module Colors */
+.module-1 { border-top-color: #3498db; }
+.module-2 { border-top-color: #2ecc71; }
+.module-3 { border-top-color: #9b59b6; }
+.module-4 { border-top-color: #e74c3c; }
+.module-5 { border-top-color: #f39c12; }
+
+/* Terms Page */
+.module-header {
+    padding: 30px 40px;
+    background: #f7fafc;
+    border-bottom: 1px solid #cbd5e0;
+}
+
+.module-header h2 {
+    color: #1a365d;
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.module-description {
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+.terms-container {
+    padding: 30px 40px;
+}
+
+.search-box {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid #cbd5e0;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+.search-box:focus {
+    outline: none;
+    border-color: #3182ce;
+}
+
+.terms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 25px;
+}
+
+.term-card {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-left: 4px solid #3182ce;
+}
+
+.term-card h3 {
+    color: #1a365d;
+    margin-bottom: 12px;
+    font-size: 20px;
+}
+
+.term-card p {
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+/* Back Button */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3182ce;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    margin: 20px 40px;
+    font-weight: 500;
+}
+
+.back-button:hover {
+    background: #2c5282;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header, .nav, .modules-grid, .terms-container {
+        padding: 20px;
+    }
+    
+    .terms-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modules-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .header h1 {
+        font-size: 28px;
+    }
+}

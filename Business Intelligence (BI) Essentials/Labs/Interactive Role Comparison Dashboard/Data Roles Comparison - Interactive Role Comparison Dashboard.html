@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Roles Comparison Dashboard</title>
+    <style>
+        :root {
+            --bi-color: #3498db;
+            --da-color: #2ecc71;
+            --de-color: #e74c3c;
+            --ds-color: #9b59b6;
+            --bg-light: #f8f9fa;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --border-radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        /* Main Content */
+        .content {
+            padding: 30px;
+        }
+        
+        /* Role Cards */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .role-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            border-top: 5px solid;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .role-card.bi { border-top-color: var(--bi-color); }
+        .role-card.da { border-top-color: var(--da-color); }
+        .role-card.de { border-top-color: var(--de-color); }
+        .role-card.ds { border-top-color: var(--ds-color); }
+        
+        .role-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .role-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .bi .role-icon { background: var(--bi-color); }
+        .da .role-icon { background: var(--da-color); }
+        .de .role-icon { background: var(--de-color); }
+        .ds .role-icon { background: var(--ds-color); }
+        
+        .role-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .role-salary {
+            font-size: 18px;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .role-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        /* Skills Tags */
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .skill-tag {
+            background: #f1f1f1;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .bi .skill-tag { background: #e3f2fd; color: var(--bi-color); }
+        .da .skill-tag { background: #e8f5e9; color: var(--da-color); }
+        .de .skill-tag { background: #ffebee; color: var(--de-color); }
+        .ds .skill-tag { background: #f3e5f5; color: var(--ds-color); }
+        
+        /* Comparison Table */
+        .comparison-section {
+            margin: 40px 0;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .comparison-table th {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #1a237e;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .comparison-table td {
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Career Path */
+        .career-path {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .career-path::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            right: 50px;
+            height: 3px;
+            background: linear-gradient(to right, var(--bi-color), var(--da-color), var(--ds-color), var(--de-color));
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        
+        .career-stage {
+            text-align: center;
+            z-index: 2;
+            background: white;
+            padding: 15px;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid;
+            position: relative;
+        }
+        
+        .career-stage.bi { border-color: var(--bi-color); }
+        .career-stage.da { border-color: var(--da-color); }
+        .career-stage.ds { border-color: var(--ds-color); }
+        .career-stage.de { border-color: var(--de-color); }
+        
+        .stage-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .stage-salary {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Interactive Elements */
+        .role-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .role-card.active .role-details {
+            max-height: 1000px;
+        }
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .toggle-btn:hover {
+            color: #333;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .career-path {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .career-path::before {
+                width: 3px;
+                height: auto;
+                top: 50px;
+                bottom: 50px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .comparison-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .title {
+                font-size: 28px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .roles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">Data Roles Comparison Dashboard</h1>
+            <p class="subtitle">BI Analyst vs Data Analyst vs Data Engineer vs Data Scientist</p>
+        </header>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Role Cards -->
+            <div class="roles-grid">
+                <!-- BI Analyst Card -->
+                <div class="role-card bi" onclick="toggleDetails(this)">
+                    <div class="role-header">
+                        <div class="role-icon">BI</div>
+                        <div>
+                            <h2 class="role-title">Business Intelligence Analyst</h2>
+                            <div class="role-salary">$72,106 Average Salary</div>
+                        </div>
+                    </div>
+                    <p class="role-description">
+                        Develops BI solutions through analytical and visualization tools. Builds reports that enable stakeholders to make crucial business decisions.
+                    </p>
+                    <div class="skills-tags">
+                        <span class="skill-tag">Excel</span>
+                        <span class="skill-tag">Tableau</span>
+                        <span class="skill-tag">Power BI</span>
+                        <span class="skill-tag">SQL</span>
+                        <span class="skill-tag">Dashboard Creation</span>
+                        <span class="skill-tag">Data Visualization</span>
+                    </div>
+                    <button class="toggle-btn">▼ Show Details</button>
+                    <div class="role-details">
+                        <h3 style="margin: 15px 0 10px 0; color: var(--bi-color);">Key Responsibilities:</h3>
+                        <ul style="color: #555; line-height: 1.6; padding-left: 20px;">
+                            <li>Design and maintain data models</li>
+                            <li>Create reports and dashboards</li>
+                            <li>Work with stakeholders to identify KPIs</li>
+                            <li>Focus on data visualization and storytelling</li>
+                            <li>Communicate insights to business teams</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Data Analyst Card -->
+                <div class="role-card da" onclick="toggleDetails(this)">
+                    <div class="role-header">
+                        <div class="role-icon">DA</div>
+                        <div>
+                            <h2 class="role-title">Data Analyst</h2>
+                            <div class="role-salary">$65,112 Average Salary</div>
+                        </div>
+                    </div>
+                    <p class="role-description">
+                        Formats, cleans, and adapts unstructured data into meaningful feedback. Uses descriptive analysis and static modeling approaches.
+                    </p>
+                    <div class="skills-tags">
+                        <span class="skill-tag">Python</span>
+                        <span class="skill-tag">SQL</span>
+                        <span class="skill-tag">Excel</span>
+                        <span class="skill-tag">Statistical Analysis</span>
+                        <span class="skill-tag">Hypothesis Testing</span>
+                        <span class="skill-tag">Data Cleaning</span>
+                    </div>
+                    <button class="toggle-btn">▼ Show Details</button>
+                    <div class="role-details">
+                        <h3 style="margin: 15px 0 10px 0; color: var(--da-color);">Key Responsibilities:</h3>
+                        <ul style="color: #555; line-height: 1.6; padding-left: 20px;">
+                            <li>Clean and prepare data for analysis</li>
+                            <li>Perform exploratory data analysis</li>
+                            <li>Create statistical models</li>
+                            <li>Conduct hypothesis testing</li>
+                            <li>Describe past and present data trends</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Data Engineer Card -->
+                <div class="role-card de" onclick="toggleDetails(this)">
+                    <div class="role-header">
+                        <div class="role-icon">DE</div>
+                        <div>
+                            <h2 class="role-title">Data Engineer</h2>
+                            <div class="role-salary">$115,000 Average Salary</div>
+                        </div>
+                    </div>
+                    <p class="role-description">
+                        Designs, builds, and maintains infrastructure for data storage, processing, and analysis. Creates reliable data pipelines.
+                    </p>
+                    <div class="skills-tags">
+                        <span class="skill-tag">Scala/Go</span>
+                        <span class="skill-tag">Hadoop</span>
+                        <span class="skill-tag">Spark</span>
+                        <span class="skill-tag">SSIS</span>
+                        <span class="skill-tag">Data Pipelines</span>
+                        <span class="skill-tag">Big Data</span>
+                    </div>
+                    <button class="toggle-btn">▼ Show Details</button>
+                    <div class="role-details">
+                        <h3 style="margin: 15px 0 10px 0; color: var(--de-color);">Key Responsibilities:</h3>
+                        <ul style="color: #555; line-height: 1.6; padding-left: 20px;">
+                            <li>Design and build data infrastructure</li>
+                            <li>Create and optimize data pipelines</li>
+                            <li>Maintain data storage systems</li>
+                            <li>Ensure data reliability and availability</li>
+                            <li>Work with big data frameworks</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Data Scientist Card -->
+                <div class="role-card ds" onclick="toggleDetails(this)">
+                    <div class="role-header">
+                        <div class="role-icon">DS</div>
+                        <div>
+                            <h2 class="role-title">Data Scientist</h2>
+                            <div class="role-salary">$98,789 Average Salary</div>
+                        </div>
+                    </div>
+                    <p class="role-description">
+                        Uses advanced statistics and machine learning to discover patterns and forecast future trends. Builds predictive models.
+                    </p>
+                    <div class="skills-tags">
+                        <span class="skill-tag">Machine Learning</span>
+                        <span class="skill-tag">Python/R</span>
+                        <span class="skill-tag">Statistics</span>
+                        <span class="skill-tag">TensorFlow</span>
+                        <span class="skill-tag">Predictive Analytics</span>
+                        <span class="skill-tag">Deep Learning</span>
+                    </div>
+                    <button class="toggle-btn">▼ Show Details</button>
+                    <div class="role-details">
+                        <h3 style="margin: 15px 0 10px 0; color: var(--ds-color);">Key Responsibilities:</h3>
+                        <ul style="color: #555; line-height: 1.6; padding-left: 20px;">
+                            <li>Build machine learning models</li>
+                            <li>Conduct predictive analytics</li>
+                            <li>Apply advanced statistical methods</li>
+                            <li>Forecast future patterns</li>
+                            <li>Develop AI algorithms</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Comparison Table -->
+            <div class="comparison-section">
+                <h2 class="section-title">📊 Detailed Role Comparison</h2>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 200px;">Category</th>
+                            <th style="background: #e3f2fd; color: var(--bi-color);">BI Analyst</th>
+                            <th style="background: #e8f5e9; color: var(--da-color);">Data Analyst</th>
+                            <th style="background: #ffebee; color: var(--de-color);">Data Engineer</th>
+                            <th style="background: #f3e5f5; color: var(--ds-color);">Data Scientist</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Primary Focus</strong></td>
+                            <td>Data visualization & reporting</td>
+                            <td>Data cleaning & analysis</td>
+                            <td>Data infrastructure & pipelines</td>
+                            <td>Predictive modeling & ML</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Key Tools</strong></td>
+                            <td>Power BI, Tableau, Excel</td>
+                            <td>Python, SQL, Excel</td>
+                            <td>Hadoop, Spark, Scala</td>
+                            <td>Python, TensorFlow, R</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Salary Range</strong></td>
+                            <td>$53K - $98K</td>
+                            <td>$47K - $89K</td>
+                            <td>$82K - $168K</td>
+                            <td>$70K - $137K</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Output</strong></td>
+                            <td>Dashboards & Reports</td>
+                            <td>Insights & Analysis</td>
+                            <td>Data Pipelines</td>
+                            <td>ML Models & Predictions</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Time Focus</strong></td>
+                            <td>Past & Present</td>
+                            <td>Past & Present</td>
+                            <td>Real-time & Future</td>
+                            <td>Future Predictions</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Career Path -->
+            <div class="comparison-section">
+                <h2 class="section-title">🚀 Career Progression Path</h2>
+                <div class="career-path">
+                    <div class="career-stage bi">
+                        <div class="stage-title">BI Analyst</div>
+                        <div class="stage-salary">$72K</div>
+                    </div>
+                    <div class="career-stage da">
+                        <div class="stage-title">Data Analyst</div>
+                        <div class="stage-salary">$65K</div>
+                    </div>
+                    <div class="career-stage ds">
+                        <div class="stage-title">Data Scientist</div>
+                        <div class="stage-salary">$99K</div>
+                    </div>
+                    <div class="career-stage de">
+                        <div class="stage-title">Data Engineer</div>
+                        <div class="stage-salary">$115K</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Differences Summary -->
+            <div class="comparison-section">
+                <h2 class="section-title">🎯 Role Differentiation Summary</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="background: #e3f2fd; padding: 20px; border-radius: 10px;">
+                        <h3 style="color: var(--bi-color); margin-bottom: 10px;">BI Analyst → Business Focus</h3>
+                        <p style="color: #555;">Translates data into business insights through visualization</p>
+                    </div>
+                    <div style="background: #e8f5e9; padding: 20px; border-radius: 10px;">
+                        <h3 style="color: var(--da-color); margin-bottom: 10px;">Data Analyst → Analysis Focus</h3>
+                        <p style="color: #555;">Cleans and analyzes data to find patterns and trends</p>
+                    </div>
+                    <div style="background: #ffebee; padding: 20px; border-radius: 10px;">
+                        <h3 style="color: var(--de-color); margin-bottom: 10px;">Data Engineer → Infrastructure Focus</h3>
+                        <p style="color: #555;">Builds and maintains data systems and pipelines</p>
+                    </div>
+                    <div style="background: #f3e5f5; padding: 20px; border-radius: 10px;">
+                        <h3 style="color: var(--ds-color); margin-bottom: 10px;">Data Scientist → Prediction Focus</h3>
+                        <p style="color: #555;">Uses ML and statistics to predict future outcomes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Toggle role details
+        function toggleDetails(card) {
+            const isActive = card.classList.contains('active');
+            
+            // Close all other cards
+            document.querySelectorAll('.role-card.active').forEach(activeCard => {
+                if (activeCard !== card) {
+                    activeCard.classList.remove('active');
+                    const btn = activeCard.querySelector('.toggle-btn');
+                    if (btn) btn.textContent = '▼ Show Details';
+                }
+            });
+            
+            // Toggle current card
+            card.classList.toggle('active', !isActive);
+            const btn = card.querySelector('.toggle-btn');
+            if (btn) {
+                btn.textContent = card.classList.contains('active') ? '▲ Hide Details' : '▼ Show Details';
+            }
+        }
+        
+        // Add salary comparison chart
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Data Roles Comparison Dashboard Loaded");
+            console.log("Click on any role card to see detailed responsibilities");
+            
+            // Add some interactivity to career path
+            const stages = document.querySelectorAll('.career-stage');
+            stages.forEach(stage => {
+                stage.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.1)';
+                    this.style.transition = 'transform 0.3s';
+                });
+                
+                stage.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
