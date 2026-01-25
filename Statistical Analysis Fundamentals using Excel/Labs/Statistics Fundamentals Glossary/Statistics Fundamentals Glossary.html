@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics Fundamentals Glossary</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
+            color: white;
+            padding: 30px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: #3498db;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .reading-time {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        .reading-time i {
+            margin-right: 8px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .search-section {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e1e5eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .clear-btn {
+            background-color: #f8f9fa;
+            border: 2px solid #e1e5eb;
+            padding: 0 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .clear-btn:hover {
+            background-color: #e9ecef;
+        }
+        
+        .alphabet-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .letter-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .letter-btn:hover, .letter-btn.active {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .glossary-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        
+        .terms-section {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f1f1;
+        }
+        
+        .terms-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .term-item {
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .term-item:hover {
+            background-color: #f0f7ff;
+            border-left-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .term-name {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .term-letter {
+            background-color: #3498db;
+            color: white;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .term-definition {
+            color: #555;
+            line-height: 1.7;
+        }
+        
+        .stats-section {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-box {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-top: 4px solid #3498db;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+        
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+        
+        footer {
+            margin-top: 40px;
+            padding: 30px 0;
+            border-top: 1px solid #e1e5eb;
+            text-align: center;
+            color: #7f8c8d;
+        }
+        
+        .author {
+            margin-top: 15px;
+            font-style: italic;
+        }
+        
+        .footer-logo {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        @media (min-width: 992px) {
+            .glossary-container {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .clear-btn {
+                padding: 15px;
+            }
+            
+            .letter-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div>
+                        <h1>Statistics Fundamentals Glossary</h1>
+                        <p class="subtitle">An alphabetized glossary of essential statistics terms for data professionals</p>
+                        <div class="reading-time">
+                            <i class="far fa-clock"></i>
+                            <span>Estimated reading time: 7 minutes</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="clear-btn" id="resetBtn">
+                        <i class="fas fa-redo"></i> Reset All
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <section class="search-section">
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-box" placeholder="Search for a term or definition...">
+                    <button class="clear-btn" id="clearSearchBtn">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+                
+                <div class="alphabet-nav" id="alphabetNav">
+                    <!-- Alphabet buttons will be generated by JavaScript -->
+                </div>
+            </section>
+            
+            <div class="glossary-container">
+                <section class="terms-section">
+                    <h2 class="section-title" id="sectionTitle">All Terms</h2>
+                    <div class="terms-list" id="termsList">
+                        <!-- Terms will be populated by JavaScript -->
+                    </div>
+                    <div id="noResults" class="no-results" style="display: none;">
+                        <i class="fas fa-search"></i>
+                        <h3>No matching terms found</h3>
+                        <p>Try searching with different keywords or browse by alphabet</p>
+                    </div>
+                </section>
+                
+                <section class="stats-section">
+                    <h2 class="section-title">Glossary Stats</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-value" id="totalTerms">0</div>
+                            <div class="stat-label">Total Terms</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="visibleTerms">0</div>
+                            <div class="stat-label">Displayed Terms</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="searchCount">0</div>
+                            <div class="stat-label">Searches Performed</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="lastLetter">-</div>
+                            <div class="stat-label">Last Letter Viewed</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 10px; color: #2c3e50;">About This Glossary</h3>
+                        <p style="color: #666; font-size: 0.95rem;">
+                            This glossary contains key statistics terms used in data science and business analytics. 
+                            Understanding these terms is essential when working in the industry, participating in user groups, 
+                            and pursuing certificate programs.
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Glossary: Statistics Fundamentals using Excel</p>
+            <p class="author">Author: Bhavika Chhatbar</p>
+            <div class="footer-logo">Data Science Academy</div>
+        </footer>
+    </div>
+
+    <script>
+        // Glossary data
+        const glossaryData = [
+            { term: "Alpha value", definition: "An average of significance." },
+            { term: "Average", definition: "The sum of all values divided by the number of values." },
+            { term: "Bar chart", definition: "A pictorial representation of data in the form of vertical or horizontal rectangular bars. In bar charts, the length of bars is proportional to the measure of data." },
+            { term: "Big data", definition: "A vast and diverse collection of data points that increases in volume, velocity, and variety." },
+            { term: "Binary variable", definition: "Variable which has only two variables, that is, one dependent and one independent variable." },
+            { term: "Boxplot", definition: "A graphical depiction of numerical data that helps us to comprehend and analyze its distribution readily." },
+            { term: "Bubble chart", definition: "A graph that uses circles to represent the data." },
+            { term: "Business analyst", definition: "Data professionals who bridge the gap between business objectives and technical solutions. They identify and document business requirements, conduct feasibility studies, and propose improvements to business processes." },
+            { term: "Categorical variable", definition: "A variable that assigns each unit of observation to a group based on a qualitative property." },
+            { term: "Counterplot", definition: "Refers to the number of times each observation appears in a categorical variable. It provides a visual representation of the distribution of observations in the variable." },
+            { term: "Cross-sectional data", definition: "A data observation from multiple subjects, such as individuals, firms, countries, or regions, at a single point in time." },
+            { term: "Cumulative distribution function", definition: "The probability that X will take a value less than or equal to x of a real-valued random variable X. This function helps to describe the probability distribution of random variables in a table." },
+            { term: "Data science", definition: "A field to study data to extract meaningful insights for businesses." },
+            { term: "Delphi method", definition: "A structured communication technique developed as an interactive forecasting method that relies on a panel of experts." },
+            { term: "Dependent variable", definition: "A variable that changes as a result of the manipulation of the independent variable." },
+            { term: "Descriptive statistics", definition: "A statistic that summarizes the characteristics of a sample through quantitative or visual means." },
+            { term: "Dichotomous variable", definition: "Variables that only take on two possible values." },
+            { term: "Dispersion", definition: "A means of describing the extent of distribution of data around a central value or point." },
+            { term: "Endogeneity", definition: "The correlation between the independent variable and unexplained variation (or 'error') in the dependent variable." },
+            { term: "F-statistics", definition: "A value is presented for the F distribution. Various statistical tests generate an F value. It determines whether the test is statistically significant." },
+            { term: "Histogram", definition: "A graph displays a frequency distribution with continuous classes grouped." },
+            { term: "Homoscedacity", definition: "A condition in which the variance of the error term in a regression model is not constant." },
+            { term: "Hypothesis", definition: "A formal statement that explains the relationship between two or more variables of the specified population." },
+            { term: "Hypothesis test", definition: "A statistical inference that concludes a population parameter or probability distribution using data from a sample." },
+            { term: "Independent variable", definition: "A variable that is not affected by the other variables that need to be measured." },
+            { term: "Linear regression", definition: "A data analysis method to predict the value of unknown data by using another related and known data value." },
+            { term: "Linearity", definition: "The relationship between two variables when the change in one variable changes the other variable proportionally." },
+            { term: "Logistic regression", definition: "A statistical method that estimates the probability of an event, such as voted or didn't vote, based on a given data set of independent variables." },
+            { term: "Mean absolute error (MAE)", definition: "An average absolute difference between the fitted values within the model (one-step ahead in-sample forecast) and the observed historical data." },
+            { term: "Median", definition: "A value of separating the higher value of a data sample, a population, or a probability distribution from the lower value. It is the middle value of a data set." },
+            { term: "Mode", definition: "A value that appears most frequently in the data set." },
+            { term: "Multicollinearity", definition: "A regression analysis where several independent variables in a model are highly correlated leads to inaccurate and unreliable results when analyzing the relationship between the dependent and independent variables." },
+            { term: "Multiple linear regression", definition: "A statistical technique that uses multiple independent variables to predict a dependent variable." },
+            { term: "Multivariant data set", definition: "Data sets with two or more variables." },
+            { term: "Nominal variable", definition: "A type of categorical variable that can have two or more categories." },
+            { term: "Normal distribution", definition: "A symmetric probability distribution about the mean indicates that data near the mean occurs more frequently than data far from the mean." },
+            { term: "Normal distribution curve", definition: "A symmetric frequency distribution around the mean indicates a higher occurrence of data near the mean than far from it." },
+            { term: "Null hypothesis", definition: "A type of statistical hypothesis proposing that there is no significant difference between the observed data and the expected results." },
+            { term: "Overfitting", definition: "A concept in data science, which occurs when a statistical model fits exactly against its training data. Unfortunately, when this happens, the algorithm cannot perform accurately against unseen data, defeating its purpose." },
+            { term: "Pie chart", definition: "A circular statistical presentation of data." },
+            { term: "Polynomial regression", definition: "The relationship between the dependent and independent variables Y and X modeled as the nth degree of the polynomial." },
+            { term: "Probability", definition: "A number reflecting the chance or likelihood for a particular event to occur. It measures values between zero and one for the possibility that something or some event might happen." },
+            { term: "P-value", definition: "The probability of observing results equally or more extreme than the observed results, assuming that the null hypothesis is true." },
+            { term: "Qualitative forecasting", definition: "The prediction of finances using expert opinion." },
+            { term: "Quantitative forecasting", definition: "The prediction of future demands based on historical data." },
+            { term: "Quantitative relationship", definition: "Relationship between variables that are expressed in numerical values." },
+            { term: "Regression analysis", definition: "The prediction of a variable's value based on another variable's value." },
+            { term: "Regression model", definition: "A model that determines the relationship between the dependent and independent variables." },
+            { term: "R-squared", definition: "A statistical measure used in regression models to determine the amount of variation in the dependent variable that the independent variable can explain." },
+            { term: "Scatter plot", definition: "Graphs are used to represent the relationship between two variables in the data sets." },
+            { term: "Simple linear regression", definition: "A statistical technique that estimates the relationship between one independent variable and one dependent variable, and its graph is a straight line." },
+            { term: "Skewness", definition: "A measure of the asymmetry of a statistical data distribution from a normal distribution." },
+            { term: "Standard deviation", definition: "A measure of the amount of variation or dispersion of a set of values." },
+            { term: "Standard error", definition: "The amount of the value of a test statistic varies from sample to sample. It is a measure of the uncertainty of the test statistic." },
+            { term: "Statistical analysis", definition: "A process of collecting and analyzing large amounts of data to identify trends and patterns." },
+            { term: "Statistical parameter", definition: "A summary statistic is a parameter that describes an aspect of a statistical population, such as its mean or standard deviation." },
+            { term: "Statistical tools", definition: "Tools by which statistical methods are applied." },
+            { term: "Statistics", definition: "A branch of study that helps to analyze, interpret, and present data." },
+            { term: "Symmetrical distribution", definition: "The data set has the same mean, median, and mode." },
+            { term: "T distribution", definition: "The estimated standard deviation of a population is when only the sample mean is known and the observations come from a normally distributed population." },
+            { term: "Underfitting", definition: "A scenario in data science where a data model is unable to capture the relationship between the input and output variables accurately generating a high error rate on both the training set and unseen data." },
+            { term: "Univariant data set", definition: "Data sets with one variable." },
+            { term: "Variance inflation factors (VIF)", definition: "The amount of multicollinearity in regression analysis." },
+            { term: "Z score", definition: "A statistical measurement describing how far a value is from the mean of a group." }
+        ];
+
+        // DOM elements
+        const termsList = document.getElementById('termsList');
+        const alphabetNav = document.getElementById('alphabetNav');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const noResults = document.getElementById('noResults');
+        const sectionTitle = document.getElementById('sectionTitle');
+        
+        // Stats elements
+        const totalTermsEl = document.getElementById('totalTerms');
+        const visibleTermsEl = document.getElementById('visibleTerms');
+        const searchCountEl = document.getElementById('searchCount');
+        const lastLetterEl = document.getElementById('lastLetter');
+        
+        // State variables
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let searchCount = 0;
+        let lastLetterViewed = '-';
+        
+        // Initialize the glossary
+        function initGlossary() {
+            // Sort glossary alphabetically
+            glossaryData.sort((a, b) => a.term.localeCompare(b.term));
+            
+            // Update total terms count
+            totalTermsEl.textContent = glossaryData.length;
+            
+            // Create alphabet navigation
+            createAlphabetNav();
+            
+            // Display all terms initially
+            displayTerms();
+            
+            // Set up event listeners
+            setupEventListeners();
+        }
+        
+        // Create alphabet navigation buttons
+        function createAlphabetNav() {
+            // Create array of letters A-Z
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            
+            // Create "All" button
+            const allButton = document.createElement('button');
+            allButton.className = 'letter-btn active';
+            allButton.textContent = 'All';
+            allButton.dataset.letter = 'all';
+            allButton.addEventListener('click', () => filterByLetter('all'));
+            alphabetNav.appendChild(allButton);
+            
+            // Create buttons for each letter
+            alphabet.forEach(letter => {
+                const button = document.createElement('button');
+                button.className = 'letter-btn';
+                button.textContent = letter;
+                button.dataset.letter = letter;
+                
+                // Check if there are terms starting with this letter
+                const termsWithLetter = glossaryData.filter(term => 
+                    term.term.toUpperCase().startsWith(letter)
+                );
+                
+                if (termsWithLetter.length === 0) {
+                    button.classList.add('disabled');
+                    button.style.opacity = '0.5';
+                    button.style.cursor = 'not-allowed';
+                } else {
+                    button.addEventListener('click', () => filterByLetter(letter));
+                }
+                
+                alphabetNav.appendChild(button);
+            });
+        }
+        
+        // Filter terms by letter
+        function filterByLetter(letter) {
+            currentFilter = letter;
+            currentSearch = '';
+            searchInput.value = '';
+            
+            // Update active button
+            document.querySelectorAll('.letter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.querySelector(`.letter-btn[data-letter="${letter}"]`).classList.add('active');
+            
+            // Update last letter viewed
+            if (letter !== 'all') {
+                lastLetterViewed = letter;
+                lastLetterEl.textContent = letter;
+            }
+            
+            // Update section title
+            if (letter === 'all') {
+                sectionTitle.textContent = 'All Terms';
+            } else {
+                sectionTitle.textContent = `Terms Starting With "${letter}"`;
+            }
+            
+            // Display filtered terms
+            displayTerms();
+        }
+        
+        // Search terms
+        function searchTerms(searchTerm) {
+            currentSearch = searchTerm.toLowerCase().trim();
+            
+            // Update search count
+            if (currentSearch) {
+                searchCount++;
+                searchCountEl.textContent = searchCount;
+            }
+            
+            // Reset letter filter when searching
+            if (currentSearch) {
+                currentFilter = 'all';
+                document.querySelectorAll('.letter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector('.letter-btn[data-letter="all"]').classList.add('active');
+            }
+            
+            // Update section title
+            if (currentSearch) {
+                sectionTitle.textContent = `Search Results for "${searchTerm}"`;
+            } else {
+                sectionTitle.textContent = 'All Terms';
+            }
+            
+            // Display search results
+            displayTerms();
+        }
+        
+        // Display terms based on current filter/search
+        function displayTerms() {
+            // Filter terms based on current filter and search
+            let filteredTerms = glossaryData;
+            
+            if (currentFilter !== 'all') {
+                filteredTerms = filteredTerms.filter(term => 
+                    term.term.toUpperCase().startsWith(currentFilter)
+                );
+            }
+            
+            if (currentSearch) {
+                filteredTerms = filteredTerms.filter(term => 
+                    term.term.toLowerCase().includes(currentSearch) || 
+                    term.definition.toLowerCase().includes(currentSearch)
+                );
+            }
+            
+            // Clear the terms list
+            termsList.innerHTML = '';
+            
+            // Update visible terms count
+            visibleTermsEl.textContent = filteredTerms.length;
+            
+            // Show no results message if no terms match
+            if (filteredTerms.length === 0) {
+                noResults.style.display = 'block';
+                termsList.style.display = 'none';
+                return;
+            }
+            
+            // Show terms list
+            noResults.style.display = 'none';
+            termsList.style.display = 'flex';
+            
+            // Display each term
+            filteredTerms.forEach(item => {
+                const termElement = document.createElement('div');
+                termElement.className = 'term-item';
+                
+                // Get the first letter of the term
+                const firstLetter = item.term.charAt(0).toUpperCase();
+                
+                termElement.innerHTML = `
+                    <div class="term-name">
+                        <span class="term-letter">${firstLetter}</span>
+                        <span>${item.term}</span>
+                    </div>
+                    <div class="term-definition">${item.definition}</div>
+                `;
+                
+                termsList.appendChild(termElement);
+            });
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Search input
+            searchInput.addEventListener('input', (e) => {
+                searchTerms(e.target.value);
+            });
+            
+            // Clear search button
+            clearSearchBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                searchTerms('');
+            });
+            
+            // Reset all button
+            resetBtn.addEventListener('click', () => {
+                currentFilter = 'all';
+                currentSearch = '';
+                searchInput.value = '';
+                lastLetterViewed = '-';
+                lastLetterEl.textContent = '-';
+                
+                // Update active button
+                document.querySelectorAll('.letter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector('.letter-btn[data-letter="all"]').classList.add('active');
+                
+                // Update section title
+                sectionTitle.textContent = 'All Terms';
+                
+                // Display all terms
+                displayTerms();
+            });
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Focus search on Ctrl+F or Cmd+F
+                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+                
+                // Clear search on Escape
+                if (e.key === 'Escape') {
+                    searchInput.value = '';
+                    searchTerms('');
+                    searchInput.blur();
+                }
+            });
+        }
+        
+        // Initialize the glossary when page loads
+        document.addEventListener('DOMContentLoaded', initGlossary);
+    </script>
+</body>
+</html>
