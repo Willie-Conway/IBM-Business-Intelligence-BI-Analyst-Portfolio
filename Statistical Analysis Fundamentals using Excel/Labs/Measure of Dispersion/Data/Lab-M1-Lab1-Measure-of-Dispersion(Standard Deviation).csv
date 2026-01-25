@@ -1,0 +1,19 @@
+No. of Job Openings ,Year 2022,Year 2023
+Data Scientist,8500,9800
+Data Engineer,4500,6400
+Python Developer,8400,5600
+Cyber Security Expert,1000,900
+Average,5600,5675
+Maximum value,1000,9800
+Minimum value,1000,900
+Range,0,8900
+Quartile 3 (Inclusive),8425,7250
+Quartile 1 (Inclusive),3625,4425
+Interquartile range,4800,2825
+Quartile 3 (Exclusive),8475,8950
+Quartile 1 (Exclusive),1875,2075
+Interquartile range,6600,6875
+Population variance,9655000,10086875
+Sample variance,12873333.33,13449166.67
+Population standard deviation,3107.249588,3175.984099
+Sample standard deviation,3587.942772,3667.31055
