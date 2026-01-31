@@ -1,0 +1,40 @@
+﻿Measures of central tendency,
+"Calculate the mean, median, and mode of the sales for each year",
+,
+Mean for 2021,$11.38
+Mean for 2022,$12.90
+Mean for 2023,$13.06
+Median for 2021,$11.82
+Median for 2022,$11.16
+Median for 2023,$11.28
+Mode for 2021,$8.74
+Mode for 2022,$5.04
+Mode for 2023,$7.56
+,
+,
+Measures of dispersion,
+Calculate the variance and standard deviation of the 2021 revenue.,
+,
+Variance,35.71789697
+Standard deviation,5.976445179
+,
+,
+Minimum and maximum,
+Calculate the minimum  and maximum revenues for the period from 2021 to 2023,
+,
+Minimum,$0.53
+Maximum,$56.70
+,
+,
+Quartiles and percentiles,
+Calculate the quartiles and percentiles of the 2021 revenue.,
+,
+Q1,7
+Q2,11.82
+Q2,14.63
+P01,1.7632
+P05,3.117
+P50,11.82
+P75,14.63
+P95,20.136
+P99,25.4216
