@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Generative AI for BI Glossary</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Complete Generative AI for BI Glossary</h1>
+            <p class="subtitle">75+ terms with interactive examples for Business Intelligence and AI</p>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-box" placeholder="Search all 75+ terms...">
+            </div>
+        </header>
+
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All Terms</button>
+            <button class="filter-btn" data-filter="ai">AI Concepts</button>
+            <button class="filter-btn" data-filter="tools">AI Tools</button>
+            <button class="filter-btn" data-filter="bias">Bias & Ethics</button>
+            <button class="filter-btn" data-filter="data">Data Management</button>
+            <button class="filter-btn" data-filter="viz">Visualization</button>
+            <button class="filter-btn" data-filter="ml">Machine Learning</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="totalTerms">0</div>
+                <div class="stat-label">Total Terms</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="visibleTerms">0</div>
+                <div class="stat-label">Currently Showing</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="withExamples">0</div>
+                <div class="stat-label">With Live Examples</div>
+            </div>
+        </div>
+
+        <div class="glossary-container" id="glossaryContainer">
+            <!-- Terms will be loaded by JavaScript -->
+        </div>
+
+        <div id="termModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <div id="modalContent">
+                    <!-- Modal content will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Glossary – Generative AI: Elevate your Business Intelligence (BI) Career</p>
+            <p>Complete interactive glossary with all 75+ terms and live examples</p>
+        </footer>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Our JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

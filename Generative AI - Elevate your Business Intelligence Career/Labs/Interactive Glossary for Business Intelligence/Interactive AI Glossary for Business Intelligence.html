@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generative AI for Business Intelligence - Interactive Glossary</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #9b59b6;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto 20px;
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.1rem;
+            box-shadow: var(--box-shadow);
+            padding-left: 50px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 25px 0;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background-color: white;
+            border: 2px solid var(--secondary-color);
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            color: var(--secondary-color);
+        }
+
+        .filter-btn:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .filter-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            min-width: 180px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .glossary-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .term-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border-top: 5px solid var(--secondary-color);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .term-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .term-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .term-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .term-category {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .term-definition {
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .example-container {
+            background-color: #f9f9f9;
+            border-left: 4px solid var(--warning-color);
+            padding: 15px;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            margin-top: 15px;
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: var(--warning-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .term-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .view-example {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .view-example:hover {
+            background-color: #2980b9;
+        }
+
+        .view-details {
+            background-color: transparent;
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
+        .view-details:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            color: #bdc3c7;
+            margin-bottom: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 800px;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--danger-color);
+        }
+
+        .modal-term-title {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            padding-right: 30px;
+        }
+
+        .modal-term-category {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .modal-section {
+            margin-bottom: 25px;
+        }
+
+        .modal-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px;
+            color: #7f8c8d;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .glossary-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stat-box {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Generative AI for Business Intelligence</h1>
+            <p class="subtitle">An interactive glossary with definitions and practical examples for key terms in Generative AI and BI</p>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-box" placeholder="Search for terms, definitions, or examples...">
+            </div>
+        </header>
+
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All Terms</button>
+            <button class="filter-btn" data-filter="ai">AI Concepts</button>
+            <button class="filter-btn" data-filter="tools">AI Tools</button>
+            <button class="filter-btn" data-filter="bias">Bias & Ethics</button>
+            <button class="filter-btn" data-filter="data">Data Management</button>
+            <button class="filter-btn" data-filter="viz">Visualization</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="totalTerms">0</div>
+                <div class="stat-label">Total Terms</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="visibleTerms">0</div>
+                <div class="stat-label">Currently Showing</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="withExamples">0</div>
+                <div class="stat-label">With Examples</div>
+            </div>
+        </div>
+
+        <div class="glossary-container" id="glossaryContainer">
+            <!-- Glossary terms will be dynamically inserted here -->
+        </div>
+
+        <div id="termModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2 class="modal-term-title" id="modalTermTitle"></h2>
+                <span class="modal-term-category" id="modalTermCategory"></span>
+                
+                <div class="modal-section">
+                    <h3>Definition</h3>
+                    <p id="modalTermDefinition"></p>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>Example</h3>
+                    <div id="modalTermExample"></div>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>Related Terms</h3>
+                    <div id="modalRelatedTerms"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Glossary – Generative AI: Elevate your Business Intelligence (BI) Career</p>
+            <p>Interactive Glossary created with HTML, CSS, and JavaScript</p>
+        </footer>
+    </div>
+
+    <script>
+        // Glossary data with definitions, categories, and examples
+        const glossaryData = [
+            {
+                term: "Akkio",
+                definition: "A no-code AI platform allows users to create and deploy predictive models and generate reports.",
+                category: "tools",
+                example: "A retail company uses Akkio to predict customer churn without writing any code. They upload their customer data, and Akkio builds a model that identifies at-risk customers with 85% accuracy, enabling targeted retention campaigns."
+            },
+            {
+                term: "Algorithmic bias",
+                definition: "Bias occurring when machine learning models produce biased results due to biased training data or algorithm design.",
+                category: "bias",
+                example: "A hiring algorithm trained on historical data from a company that predominantly hired men for technical roles may learn to favor male candidates, even when female candidates have equal or better qualifications."
+            },
+            {
+                term: "Alteryx",
+                definition: "AI tool used to connect to various data sources, blend the data, and apply cleansing operations such as removing duplicates and correcting errors, ensuring consistency and accuracy without manual intervention.",
+                category: "tools",
+                example: "A financial analyst uses Alteryx to combine sales data from SQL databases, marketing metrics from Google Analytics, and customer feedback from CSV files. Alteryx automatically cleanses the data by removing duplicates, fixing formatting issues, and standardizing date formats, saving hours of manual work."
+            },
+            {
+                term: "Anomaly detection",
+                definition: "The process of identifying observations, events, or data points that deviate from the usual, standard, or expected behavior within a data set.",
+                category: "ai",
+                example: "A bank's fraud detection system uses anomaly detection to flag unusual transactions. If a customer who typically spends $50-200 per transaction suddenly makes a $5,000 purchase in a foreign country, the system flags it for review."
+            },
+            {
+                term: "Apache Kafka",
+                definition: "A distributed streaming platform capable of handling a high volume of real-time data.",
+                category: "data",
+                example: "An e-commerce platform uses Apache Kafka to process real-time clickstream data from millions of users. This allows them to update product recommendations instantly based on user behavior and detect trending products in real-time."
+            },
+            {
+                term: "Ask Data",
+                definition: "A feature in Tableau that allows asking questions from data using natural language. Instead of manually dragging and dropping fields, type a question in common language, and Ask Data instantly responds with automatic data visualizations.",
+                category: "viz",
+                example: "A business manager types 'Show me sales by region for the last quarter' into Tableau's Ask Data feature. The system automatically generates a map visualization with sales figures color-coded by region, without the manager needing to know how to build the visualization manually."
+            },
+            {
+                term: "Automated dashboard creation",
+                definition: "A process wherein once the AI tools have the data, they create a complete dashboard with related charts and visualizations.",
+                category: "viz",
+                example: "A marketing team uploads their campaign performance data to a BI tool. The AI analyzes the data and automatically creates a dashboard with key metrics like conversion rates, ROI by channel, and customer acquisition costs, complete with appropriate visualizations."
+            },
+            {
+                term: "Automated learning",
+                definition: "The process of automatically learning and capturing the important features of your data.",
+                category: "ai",
+                example: "A healthcare provider uses automated learning to analyze patient records. The system automatically identifies that age, blood pressure, and cholesterol levels are the most important predictors of heart disease risk, without human direction."
+            },
+            {
+                term: "Automatic data visualization",
+                definition: "A process whereby AI tools analyze data and recommend the most appropriate chart type to present insights effectively.",
+                category: "viz",
+                example: "When analyzing time-series sales data, an AI tool automatically recommends a line chart to show trends over time. For categorical comparison of product performance across regions, it suggests a bar chart for optimal clarity."
+            },
+            {
+                term: "Business intelligence (BI) lifecycle",
+                definition: "An iterative process that transforms data into actionable insights.",
+                category: "data",
+                example: "A retail company follows the BI lifecycle: 1) Collect sales and inventory data, 2) Clean and transform the data, 3) Analyze to identify slow-moving products, 4) Create visualizations showing profitability by product category, 5) Share insights with decision-makers, who then optimize inventory levels."
+            },
+            {
+                term: "ChatGPT",
+                definition: "OpenAI can help BI analysts craft compelling narratives based on data insights, draft initial reports, and write prompts for data analysis.",
+                category: "tools",
+                example: "A BI analyst uses ChatGPT to help write a narrative explaining a 15% drop in Q3 sales. ChatGPT suggests: 'The decline appears concentrated in the Northeast region, coinciding with unseasonably warm weather that reduced demand for our seasonal products. Competitor pricing analysis shows...'"
+            },
+            {
+                term: "Clustering",
+                definition: "Unsupervised machine learning task of grouping similar data points together based on their characteristics or attributes to form groups.",
+                category: "ai",
+                example: "A streaming service uses clustering to group users based on viewing habits. They identify clusters like 'Documentary Enthusiasts', 'Action Movie Binge-Watchers', and 'Family Animation Viewers' to personalize recommendations and marketing campaigns."
+            },
+            {
+                term: "Confirmation bias",
+                definition: "Bias referring to analysts interpreting data to confirm existing beliefs leading to the selective use of data that supports a desired outcome.",
+                category: "bias",
+                example: "A product manager believes their new feature is successful and only focuses on positive user feedback metrics while ignoring data showing that 40% of users abandon the feature after first use."
+            },
+            {
+                term: "Data cleansing and preparation",
+                definition: "The process of fixing or removing incorrect, corrupted, incorrectly formatted, duplicate, or incomplete data within a data set.",
+                category: "data",
+                example: "Before analyzing customer data, a company uses automated tools to: remove duplicate entries for the same customer, standardize address formats (changing 'St.' to 'Street'), fill in missing phone numbers using customer service records, and correct obvious errors like birth years in the future."
+            },
+            {
+                term: "Generative AI (GenAI)",
+                definition: "Type of AI that can generate new content like text, images, music, audio, and videos using generative models. Generative AI models can learn patterns and structures from their input training data and then generate new data with similar characteristics.",
+                category: "ai",
+                example: "A marketing team uses generative AI to create multiple versions of product descriptions for an e-commerce site. The AI generates unique, compelling copy for each product based on its features, target audience, and brand voice, saving countless hours of manual writing."
+            },
+            {
+                term: "Large language models (LLMs)",
+                definition: "A type of deep learning model trained on massive amounts of text data to learn the patterns and structures of language. They can perform language-related tasks, including text generation, translation, summarization, sentiment analysis, and more.",
+                category: "ai",
+                example: "A customer support department uses an LLM to analyze thousands of support tickets, automatically categorizing them by issue type, summarizing the main problems, and suggesting standardized responses for common issues."
+            },
+            {
+                term: "Natural language querying",
+                definition: "A capability in BI software that enables users to ask questions of data in natural language.",
+                category: "ai",
+                example: "Instead of writing complex SQL, a sales manager types 'What were our top 5 products by revenue last month in the European market?' into their BI tool. The system interprets the question, queries the database, and returns a formatted table with the results."
+            },
+            {
+                term: "Power BI",
+                definition: "BI tool developed by Microsoft that helps transform raw data from various sources into meaningful insights through interactive visualizations and reports.",
+                category: "tools",
+                example: "A manufacturing company uses Power BI to connect to their ERP system, production databases, and quality control logs. They create interactive dashboards that show real-time production efficiency, defect rates by shift, and inventory levels, allowing managers to spot issues immediately."
+            },
+            {
+                term: "Predictive analytics",
+                definition: "Statistical techniques used to predict future behavior and events by uncovering relationships and patterns within large volumes of data.",
+                category: "ai",
+                example: "An airline uses predictive analytics to forecast demand for specific routes. By analyzing historical booking patterns, seasonality, economic indicators, and competitor pricing, they can optimize ticket prices and allocate aircraft more efficiently."
+            },
+            {
+                term: "Tableau",
+                definition: "Visual analytics platform that transforms the way we use data to solve problems.",
+                category: "tools",
+                example: "A healthcare organization uses Tableau to visualize patient wait times across different departments. The interactive dashboard shows hotspots where wait times exceed targets, allowing administrators to reallocate staff resources in real-time to balance the workload."
+            }
+        ];
+
+        // Initialize the glossary
+        document.addEventListener('DOMContentLoaded', function() {
+            const glossaryContainer = document.getElementById('glossaryContainer');
+            const searchInput = document.getElementById('searchInput');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const modal = document.getElementById('termModal');
+            const closeModal = document.querySelector('.close-modal');
+            const totalTermsElement = document.getElementById('totalTerms');
+            const visibleTermsElement = document.getElementById('visibleTerms');
+            const withExamplesElement = document.getElementById('withExamples');
+            
+            let currentFilter = 'all';
+            let currentSearchTerm = '';
+            
+            // Set total terms count
+            totalTermsElement.textContent = glossaryData.length;
+            
+            // Filter glossary data by category
+            function filterGlossary() {
+                let filteredData = glossaryData;
+                
+                // Apply category filter
+                if (currentFilter !== 'all') {
+                    filteredData = filteredData.filter(term => term.category === currentFilter);
+                }
+                
+                // Apply search filter
+                if (currentSearchTerm) {
+                    const searchLower = currentSearchTerm.toLowerCase();
+                    filteredData = filteredData.filter(term => 
+                        term.term.toLowerCase().includes(searchLower) ||
+                        term.definition.toLowerCase().includes(searchLower) ||
+                        (term.example && term.example.toLowerCase().includes(searchLower))
+                    );
+                }
+                
+                return filteredData;
+            }
+            
+            // Render glossary terms
+            function renderGlossary() {
+                const filteredData = filterGlossary();
+                
+                // Update stats
+                visibleTermsElement.textContent = filteredData.length;
+                const termsWithExamples = filteredData.filter(term => term.example).length;
+                withExamplesElement.textContent = termsWithExamples;
+                
+                // Clear container
+                glossaryContainer.innerHTML = '';
+                
+                // If no results, show message
+                if (filteredData.length === 0) {
+                    glossaryContainer.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <h3>No matching terms found</h3>
+                            <p>Try a different search term or filter</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Render each term
+                filteredData.forEach(term => {
+                    const termCard = document.createElement('div');
+                    termCard.className = 'term-card';
+                    
+                    // Highlight search term in text
+                    const highlightText = (text) => {
+                        if (!currentSearchTerm) return text;
+                        
+                        const regex = new RegExp(`(${currentSearchTerm})`, 'gi');
+                        return text.replace(regex, '<span class="highlight">$1</span>');
+                    };
+                    
+                    const categoryNames = {
+                        'ai': 'AI Concepts',
+                        'tools': 'AI Tools',
+                        'bias': 'Bias & Ethics',
+                        'data': 'Data Management',
+                        'viz': 'Visualization'
+                    };
+                    
+                    termCard.innerHTML = `
+                        <div class="term-header">
+                            <h3 class="term-title">${highlightText(term.term)}</h3>
+                            <span class="term-category">${categoryNames[term.category]}</span>
+                        </div>
+                        <p class="term-definition">${highlightText(term.definition)}</p>
+                        ${term.example ? `
+                            <div class="example-container">
+                                <div class="example-title">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Example
+                                </div>
+                                <p>${highlightText(term.example.substring(0, 150))}${term.example.length > 150 ? '...' : ''}</p>
+                            </div>
+                        ` : ''}
+                        <div class="term-actions">
+                            ${term.example ? `<button class="action-btn view-example" data-term="${term.term}">View Example</button>` : ''}
+                            <button class="action-btn view-details" data-term="${term.term}">View Details</button>
+                        </div>
+                    `;
+                    
+                    glossaryContainer.appendChild(termCard);
+                });
+                
+                // Add event listeners to buttons
+                document.querySelectorAll('.view-example').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const termName = this.getAttribute('data-term');
+                        openModal(termName, 'example');
+                    });
+                });
+                
+                document.querySelectorAll('.view-details').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const termName = this.getAttribute('data-term');
+                        openModal(termName, 'full');
+                    });
+                });
+            }
+            
+            // Open modal with term details
+            function openModal(termName, viewType) {
+                const term = glossaryData.find(t => t.term === termName);
+                if (!term) return;
+                
+                // Set modal content
+                document.getElementById('modalTermTitle').textContent = term.term;
+                document.getElementById('modalTermDefinition').textContent = term.definition;
+                
+                const categoryNames = {
+                    'ai': 'AI Concepts',
+                    'tools': 'AI Tools',
+                    'bias': 'Bias & Ethics',
+                    'data': 'Data Management',
+                    'viz': 'Visualization'
+                };
+                document.getElementById('modalTermCategory').textContent = categoryNames[term.category];
+                
+                // Set example content
+                const exampleContainer = document.getElementById('modalTermExample');
+                if (term.example) {
+                    exampleContainer.innerHTML = `
+                        <div class="example-container" style="border-left-color: var(--warning-color); margin: 0;">
+                            <div class="example-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Practical Example
+                            </div>
+                            <p>${term.example}</p>
+                        </div>
+                    `;
+                } else {
+                    exampleContainer.innerHTML = `<p><em>No example available for this term.</em></p>`;
+                }
+                
+                // Find related terms (by category)
+                const relatedTerms = glossaryData.filter(t => 
+                    t.category === term.category && t.term !== term.term
+                ).slice(0, 3);
+                
+                const relatedTermsContainer = document.getElementById('modalRelatedTerms');
+                if (relatedTerms.length > 0) {
+                    let relatedHTML = '<p>';
+                    relatedTerms.forEach((relatedTerm, index) => {
+                        relatedHTML += `<button class="view-details" data-term="${relatedTerm.term}" style="margin: 5px;">${relatedTerm.term}</button>`;
+                        if (index < relatedTerms.length - 1) relatedHTML += ' ';
+                    });
+                    relatedHTML += '</p>';
+                    relatedTermsContainer.innerHTML = relatedHTML;
+                    
+                    // Add event listeners to related term buttons
+                    relatedTermsContainer.querySelectorAll('.view-details').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const relatedTermName = this.getAttribute('data-term');
+                            openModal(relatedTermName, 'full');
+                        });
+                    });
+                } else {
+                    relatedTermsContainer.innerHTML = '<p><em>No related terms found.</em></p>';
+                }
+                
+                // Show modal
+                modal.style.display = 'flex';
+                
+                // If viewType is 'example', scroll to example section
+                if (viewType === 'example') {
+                    setTimeout(() => {
+                        document.querySelector('.modal-section:nth-child(2)').scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }
+            }
+            
+            // Close modal
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Search functionality
+            searchInput.addEventListener('input', function() {
+                currentSearchTerm = this.value.trim();
+                renderGlossary();
+            });
+            
+            // Filter functionality
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update current filter
+                    currentFilter = this.getAttribute('data-filter');
+                    
+                    // Re-render glossary
+                    renderGlossary();
+                });
+            });
+            
+            // Initial render
+            renderGlossary();
+        });
+    </script>
+</body>
+</html>
