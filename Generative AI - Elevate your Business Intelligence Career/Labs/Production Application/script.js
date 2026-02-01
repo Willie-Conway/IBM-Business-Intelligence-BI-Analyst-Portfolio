@@ -1,4 +1,4 @@
-// COMPLETE Glossary Data - ALL 75+ Terms
+// COMPLETE Glossary Data - ALL 86 Terms
 const glossaryData = [
     {
         id: 1,
@@ -2169,6 +2169,7 @@ ORDER BY total_spent DESC;</pre>
 // Global variables
 let currentCharts = {};
 let kafkaInterval;
+let activeExampleId = null;
 
 // Initialize the glossary
 document.addEventListener('DOMContentLoaded', function() {
@@ -2178,7 +2179,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update total terms count
     document.getElementById('totalTerms').textContent = glossaryData.length;
     document.getElementById('visibleTerms').textContent = glossaryData.length;
-    document.getElementById('withExamples').textContent = glossaryData.length;
+    document.getElementById('withExamples').textContent = glossaryData.filter(t => t.example).length;
 });
 
 // Render all glossary terms
@@ -2206,6 +2207,7 @@ function renderGlossary() {
                 <span class="term-category">${getCategoryName(term.category)}</span>
             </div>
             <p class="term-definition">${highlightText(term.definition.substring(0, 150))}${term.definition.length > 150 ? '...' : ''}</p>
+            ${term.example ? `
             <div class="example-container">
                 <div class="example-title">
                     <i class="fas fa-play-circle"></i>
@@ -2213,9 +2215,10 @@ function renderGlossary() {
                 </div>
                 <p>Click to try interactive demo</p>
             </div>
+            ` : '<div style="height: 20px;"></div>'}
             <div class="term-actions">
                 <button class="action-btn view-example" onclick="event.stopPropagation(); openModal(${term.id})">
-                    Try Live Example
+                    ${term.example ? 'Try Live Example' : 'View Details'}
                 </button>
             </div>
         </div>
@@ -2241,7 +2244,7 @@ function highlightText(text) {
     if (!searchTerm || !text) return text;
     
     const regex = new RegExp(`(${searchTerm})`, 'gi');
-    return text.replace(regex, '<span class="highlight">$1</span>');
+    return text.toString().replace(regex, '<span class="highlight">$1</span>');
 }
 
 // Get category display name
@@ -2278,12 +2281,19 @@ function setupEventListeners() {
     document.getElementById('termModal').addEventListener('click', function(e) {
         if (e.target === this) closeModal();
     });
+    
+    // Escape key to close modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
 }
 
 // Open modal with term details
 function openModal(termId) {
     const term = glossaryData.find(t => t.id === termId);
     if (!term) return;
+    
+    activeExampleId = termId;
     
     document.getElementById('modalContent').innerHTML = `
         <h2 class="modal-term-title">${term.term}</h2>
@@ -2294,10 +2304,12 @@ function openModal(termId) {
             <p>${term.definition}</p>
         </div>
         
+        ${term.example ? `
         <div class="modal-section">
             <h3>Live Example</h3>
             ${term.example}
         </div>
+        ` : ''}
         
         <div class="modal-section">
             <h3>Related Terms</h3>
@@ -2310,6 +2322,7 @@ function openModal(termId) {
     `;
     
     document.getElementById('termModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
     
     // Initialize example-specific functionality
     setTimeout(() => initializeExample(term), 100);
@@ -2325,6 +2338,8 @@ function getRelatedTerms(term) {
 // Close modal
 function closeModal() {
     document.getElementById('termModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    activeExampleId = null;
     
     // Clean up intervals
     if (kafkaInterval) {
@@ -2344,19 +2359,45 @@ function closeModal() {
 // Initialize example functionality
 function initializeExample(term) {
     // Initialize charts if needed
-    if (term.id === 4) createAnomalyChart();
-    if (term.id === 8) createFeatureChart();
-    if (term.id === 20) createCorrelationChart();
-    if (term.id === 30) createVizChart();
-    if (term.id === 50) createInteractiveChart();
-    if (term.id === 69) createOverfittingChart();
-    if (term.id === 71) createPowerBIChart();
-    if (term.id === 72) createPredictiveChart();
+    const chartTermIds = [4, 8, 20, 30, 50, 69, 71, 72];
+    if (chartTermIds.includes(term.id)) {
+        initializeChart(term.id);
+    }
     
     // Initialize chat interfaces
-    if ([6, 11, 14, 19, 37, 43, 52, 64].includes(term.id)) {
+    const chatTermIds = [6, 14, 19, 37, 43, 52, 64];
+    if (chatTermIds.includes(term.id)) {
         initializeChat(term.id);
     }
+    
+    // Initialize other interactive elements
+    setupInteractiveElements(term.id);
+}
+
+// Initialize charts
+function initializeChart(termId) {
+    switch(termId) {
+        case 4: createAnomalyChart(); break;
+        case 8: createFeatureChart(); break;
+        case 20: createCorrelationChart(); break;
+        case 30: createVizChart(); break;
+        case 50: createInteractiveChart(); break;
+        case 69: createOverfittingChart(); break;
+        case 71: createPowerBIChart(); break;
+        case 72: createPredictiveChart(); break;
+    }
+}
+
+// Setup interactive elements
+function setupInteractiveElements(termId) {
+    // Setup sliders, buttons, and other interactive elements
+    if (termId === 15) setupClusteringSliders();
+    if (termId === 74) setupScenarioSlider();
+    if (termId === 39) setupGenAISelect();
+    if (termId === 45) setupImageRecognition();
+    if (termId === 53) setupMLTypeSelect();
+    if (termId === 63) setupNLPSelect();
+    if (termId === 82) setupSQLExamples();
 }
 
 // ========== EXAMPLE FUNCTIONS ==========
@@ -2374,12 +2415,12 @@ function runAlteryxWorkflow() {
     document.getElementById('alteryxResult').style.display = 'block';
 }
 
-// Chart functions
+// Anomaly Detection Chart
 function createAnomalyChart() {
     const ctx = document.getElementById('anomalyChart');
     if (!ctx) return;
     
-    currentCharts.anomaly = new Chart(ctx, {
+    currentCharts.anomaly = new Chart(ctx.getContext('2d'), {
         type: 'line',
         data: {
             labels: ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM'],
@@ -2389,12 +2430,31 @@ function createAnomalyChart() {
                 borderColor: '#3498db',
                 backgroundColor: 'rgba(52, 152, 219, 0.1)',
                 borderWidth: 2,
-                fill: true
+                fill: true,
+                tension: 0.4
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Transaction Count'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    }
+                }
+            }
         }
     });
 }
@@ -2404,8 +2464,9 @@ function addAnomaly() {
         const labels = currentCharts.anomaly.data.labels;
         const data = currentCharts.anomaly.data.datasets[0].data;
         
-        labels.push('New');
-        data.push(Math.random() > 0.7 ? Math.random() * 5000 : Math.random() * 200);
+        const times = ['4 PM', '5 PM', '6 PM', '7 PM', '8 PM'];
+        labels.push(times[labels.length - 7] || 'New Time');
+        data.push(Math.random() > 0.7 ? Math.random() * 5000 + 1000 : Math.random() * 200 + 100);
         
         currentCharts.anomaly.update();
     }
@@ -2419,10 +2480,12 @@ function resetAnomalyChart() {
     }
 }
 
-// Kafka functions
+// Kafka Streaming
 function startKafkaStream() {
     let clickCount = 0;
     let sensorCount = 0;
+    
+    if (kafkaInterval) clearInterval(kafkaInterval);
     
     kafkaInterval = setInterval(() => {
         clickCount += Math.floor(Math.random() * 5) + 1;
@@ -2440,26 +2503,24 @@ function stopKafkaStream() {
     }
 }
 
-// Chat initialization
+// Chat interfaces
 function initializeChat(termId) {
     const inputIds = {
         6: 'askDataInput',
-        11: 'chatGPTInput',
-        14: 'copilotInput',
-        19: 'geminiInput',
-        37: 'cognosInput',
-        43: 'nlqInput',
+        14: 'chatGPTInput',
+        19: 'copilotInput',
+        37: 'geminiInput',
+        43: 'cognosInput',
         52: 'llmInput',
         64: 'nlqInput'
     };
     
     const messageIds = {
         6: 'askDataMessages',
-        11: 'chatGPTMessages',
-        14: 'copilotMessages',
-        19: 'geminiMessages',
-        37: 'cognosMessages',
-        43: 'nlqMessages',
+        14: 'chatGPTMessages',
+        19: 'copilotMessages',
+        37: 'geminiMessages',
+        43: 'cognosMessages',
         52: 'llmMessages',
         64: 'nlqMessages'
     };
@@ -2473,7 +2534,11 @@ function initializeChat(termId) {
     const messages = document.getElementById(messagesId);
     
     if (input && messages) {
-        input.addEventListener('keypress', function(e) {
+        // Clear existing listeners
+        const newInput = input.cloneNode(true);
+        input.parentNode.replaceChild(newInput, input);
+        
+        newInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && this.value.trim()) {
                 const question = this.value.trim();
                 
@@ -2491,14 +2556,33 @@ function initializeChat(termId) {
                     const aiMsg = document.createElement('div');
                     aiMsg.className = 'message ai-message';
                     
-                    const responses = [
-                        "Based on your data, I can see several interesting patterns.",
-                        "The analysis shows positive trends in key metrics.",
-                        "I've processed your request and found relevant insights.",
-                        "Here are the results based on your query."
-                    ];
+                    const responses = {
+                        6: ["Sales increased 15% last quarter with strongest performance in Western regions.", 
+                           "Customer retention rate is 85% for Q3.", 
+                           "Top products by revenue: Laptop Pro ($45K), Headphones ($32K), Monitor ($28K)."],
+                        14: ["The data shows significant growth in online sales channels.", 
+                           "Customer satisfaction scores improved by 8% this quarter.", 
+                           "Marketing campaign ROI calculated at 245%."],
+                        19: ["I'll create a sales trend chart showing monthly performance.", 
+                           "Here's the Excel formula for calculating growth: =((B2-A2)/A2)*100", 
+                           "Power BI dashboard updated with latest metrics."],
+                        37: ["Marketing campaign ideas: 1) Social media influencer partnerships 2) Customer referral program 3) Limited-time offers.", 
+                           "Data storytelling approach: Focus on the customer journey from awareness to purchase.", 
+                           "Brainstorming session: Consider seasonal trends and customer feedback."],
+                        43: ["Business insights: Revenue trending upward with 12% monthly growth.", 
+                           "Analysis complete: Customer acquisition cost decreased by 15%.", 
+                           "Key finding: Product B shows highest customer satisfaction at 4.8/5."],
+                        52: ["Text analysis complete. Key themes identified: growth, efficiency, innovation.", 
+                           "Translation to French completed successfully.", 
+                           "Sentiment analysis: Overall positive sentiment detected with 85% confidence."],
+                        64: ["Query processed: Last month sales total $85,420.", 
+                           "Answer: Top performing region is West with $245,000 revenue.", 
+                           "Result: Average customer lifetime value is $1,245."]
+                    };
                     
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    const termResponses = responses[termId] || ["I've processed your request and found relevant insights."];
+                    const randomResponse = termResponses[Math.floor(Math.random() * termResponses.length)];
+                    
                     aiMsg.innerHTML = `<strong>AI:</strong> ${randomResponse}`;
                     messages.appendChild(aiMsg);
                     
@@ -2510,28 +2594,48 @@ function initializeChat(termId) {
     }
 }
 
-// More basic functions for examples
+// Basic functions
 function refreshDashboard() {
+    const revenueElem = document.querySelector('#askDataMessages')?.parentElement?.querySelector('.demo-title');
+    if (revenueElem) {
+        const newRevenue = 245820 + Math.floor(Math.random() * 5000) - 2500;
+        revenueElem.innerHTML = `📊 Auto-generated Dashboard - Updated: $${newRevenue.toLocaleString()}`;
+    }
     alert('Dashboard refreshed with latest data!');
 }
 
+// Feature Chart
 function createFeatureChart() {
     const ctx = document.getElementById('featureChart');
     if (!ctx) return;
     
-    currentCharts.features = new Chart(ctx, {
+    currentCharts.features = new Chart(ctx.getContext('2d'), {
         type: 'bar',
         data: {
             labels: ['Tenure', 'Monthly Charges', 'Contract', 'Support', 'Payment'],
             datasets: [{
-                label: 'Importance',
+                label: 'Feature Importance',
                 data: [85, 78, 62, 45, 28],
-                backgroundColor: '#3498db'
+                backgroundColor: ['#3498db', '#2ecc71', '#9b59b6', '#e74c3c', '#f39c12'],
+                borderWidth: 1
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Importance Score'
+                    }
+                }
+            }
         }
     });
 }
@@ -2539,13 +2643,22 @@ function createFeatureChart() {
 function analyzeFeatures() {
     if (currentCharts.features) {
         const newData = currentCharts.features.data.datasets[0].data.map(
-            val => Math.min(100, val + Math.random() * 20 - 10)
+            val => Math.min(100, val + Math.random() * 20 - 5)
         );
         currentCharts.features.data.datasets[0].data = newData;
         currentCharts.features.update();
+        
+        // Find max importance
+        const maxIndex = newData.indexOf(Math.max(...newData));
+        const features = ['Tenure', 'Monthly Charges', 'Contract', 'Support', 'Payment'];
+        document.querySelector('#featureChart').parentElement.innerHTML += 
+            `<div style="margin-top: 10px; padding: 8px; background: #e8f4f8; border-radius: 8px;">
+                <strong>AI Discovered:</strong> ${features[maxIndex]} is the strongest predictor of churn.
+            </div>`;
     }
 }
 
+// Chart Recommendations
 function recommendChart() {
     const select = document.getElementById('dataTypeSelect');
     const recommendation = document.getElementById('chartRecommendation');
@@ -2557,19 +2670,20 @@ function recommendChart() {
     }
     
     const recommendations = {
-        'timeseries': 'Line Chart - Best for showing trends over time',
-        'categories': 'Bar Chart - Ideal for comparing different categories'
+        'timeseries': 'Line Chart - Best for showing trends and patterns over time',
+        'categories': 'Bar Chart - Ideal for comparing values across different categories'
     };
     
-    recommendedChart.textContent = recommendations[select.value] || 'Chart recommendation';
+    recommendedChart.textContent = recommendations[select.value] || 'Chart recommendation will appear here';
     recommendation.style.display = 'block';
 }
 
-// More utility functions
+// Schema Analysis
 function analyzeSchema() {
     document.getElementById('schemaResult').style.display = 'block';
 }
 
+// Bias Examples
 function showBiasExample() {
     const type = document.getElementById('biasType').value;
     const example = document.getElementById('biasExample');
@@ -2581,75 +2695,115 @@ function showBiasExample() {
     }
     
     const examples = {
-        'selection': 'Survey only includes online customers, excluding offline users.',
-        'measurement': 'Survey question wording influences responses.',
-        'confirmation': 'Analyst only looks at data that supports their hypothesis.'
+        'selection': 'Survey only includes online customers (75% of respondents), excluding offline users who may have different preferences.',
+        'measurement': 'Survey question "How EXCELLENT is our service?" uses leading language that biases responses toward positive ratings.',
+        'confirmation': 'Analyst only examines data from successful campaigns, ignoring failed campaigns that could provide valuable insights.'
     };
     
     desc.textContent = examples[type];
     example.style.display = 'block';
 }
 
+// BI Lifecycle
 function showBIStage(stage) {
     const stages = {
-        1: 'Collecting data from various sources.',
-        2: 'Cleaning and preparing data for analysis.',
-        3: 'Analyzing data using statistical methods.',
-        4: 'Creating visualizations and reports.'
+        1: 'Collecting raw data from CRM, web analytics, and transaction systems. Data validation and integration.',
+        2: 'Cleaning, transforming, and preparing data for analysis. Handling missing values and outliers.',
+        3: 'Applying statistical methods and machine learning algorithms to extract insights and patterns.',
+        4: 'Creating interactive dashboards, reports, and visualizations to communicate findings.'
     };
     
-    document.getElementById('stageText').textContent = stages[stage];
+    const stageNames = ['Data Collection', 'Data Preparation', 'Data Analysis', 'Data Visualization'];
+    
+    document.getElementById('stageText').textContent = `${stageNames[stage-1]}: ${stages[stage]}`;
     document.getElementById('biStageDetail').style.display = 'block';
 }
 
+// Bias Analysis
 function showBiasedView() {
-    document.getElementById('analysisText').textContent = 'Feature successful based on 60% adoption rate.';
+    document.getElementById('analysisText').textContent = 'Feature successful with 60% adoption rate. Majority of users find it valuable.';
     document.getElementById('biasAnalysis').style.display = 'block';
 }
 
 function showCompleteView() {
-    document.getElementById('analysisText').textContent = '40% abandonment rate suggests usability issues that need addressing.';
+    document.getElementById('analysisText').textContent = '40% abandonment rate indicates usability issues. Further investigation needed on user experience and onboarding.';
     document.getElementById('biasAnalysis').style.display = 'block';
 }
 
+// Ethical Assessment
 function runEthicalAssessment() {
-    document.getElementById('fairnessBar').style.width = '85%';
-    document.getElementById('transparencyBar').style.width = '75%';
-    document.getElementById('privacyBar').style.width = '90%';
+    const fairness = Math.floor(Math.random() * 30) + 70;
+    const transparency = Math.floor(Math.random() * 35) + 60;
+    const privacy = Math.floor(Math.random() * 20) + 80;
+    
+    document.getElementById('fairnessBar').style.width = `${fairness}%`;
+    document.getElementById('transparencyBar').style.width = `${transparency}%`;
+    document.getElementById('privacyBar').style.width = `${privacy}%`;
+    
+    // Update text
+    const bars = document.querySelectorAll('.progress-bar + div');
+    bars[0].textContent = `Fairness: ${fairness}%`;
+    bars[1].textContent = `Transparency: ${transparency}%`;
+    bars[2].textContent = `Privacy: ${privacy}%`;
 }
 
-// Create correlation chart
+// Correlation Chart
 function createCorrelationChart() {
     const ctx = document.getElementById('correlationChart');
     if (!ctx) return;
     
-    currentCharts.correlation = new Chart(ctx, {
+    // Generate correlated data
+    const strength = 0.8;
+    const data = Array.from({length: 30}, () => {
+        const x = Math.random() * 100;
+        const y = x * strength + (Math.random() * 30 - 15);
+        return { x, y };
+    });
+    
+    currentCharts.correlation = new Chart(ctx.getContext('2d'), {
         type: 'scatter',
         data: {
             datasets: [{
                 label: 'Data Points',
-                data: Array.from({length: 20}, () => ({
-                    x: Math.random() * 100,
-                    y: Math.random() * 100
-                })),
-                backgroundColor: '#3498db'
+                data: data,
+                backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                borderColor: '#2980b9',
+                borderWidth: 1,
+                pointRadius: 6
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
             scales: {
-                x: { beginAtZero: true },
-                y: { beginAtZero: true }
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Variable X'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Variable Y'
+                    }
+                }
             }
         }
     });
+    
+    updateCorrelation(0.8);
 }
 
 function updateCorrelation(strength) {
     if (!currentCharts.correlation) return;
     
-    const data = Array.from({length: 20}, () => {
+    const data = Array.from({length: 30}, () => {
         const x = Math.random() * 100;
         const y = x * strength + (Math.random() * 30 - 15);
         return { x, y };
@@ -2659,12 +2813,108 @@ function updateCorrelation(strength) {
     currentCharts.correlation.update();
     
     document.getElementById('correlationValue').textContent = strength.toFixed(2);
-    document.getElementById('correlationStrength').textContent = 
-        Math.abs(strength) > 0.7 ? 'Strong relationship' :
-        Math.abs(strength) > 0.3 ? 'Moderate relationship' : 'Weak relationship';
+    
+    let strengthText = 'No relationship';
+    if (Math.abs(strength) > 0.7) strengthText = 'Strong relationship';
+    else if (Math.abs(strength) > 0.3) strengthText = 'Moderate relationship';
+    else if (Math.abs(strength) > 0.1) strengthText = 'Weak relationship';
+    
+    document.getElementById('correlationStrength').textContent = strengthText;
 }
 
-// More basic functions
+// Clustering Sliders
+function setupClusteringSliders() {
+    updateCluster();
+}
+
+function updateCluster() {
+    const freq = parseInt(document.getElementById('freqSlider').value);
+    const value = parseInt(document.getElementById('valueSlider').value);
+    
+    document.getElementById('freqValue').textContent = freq;
+    document.getElementById('valueValue').textContent = value;
+    
+    // Simple clustering logic
+    let cluster = '';
+    let color = '';
+    
+    if (freq > 20 && value > 300) {
+        cluster = 'Premium Customers';
+        color = '#27ae60';
+    } else if (freq > 10 && value > 150) {
+        cluster = 'Regular Customers';
+        color = '#3498db';
+    } else if (freq > 5 && value > 75) {
+        cluster = 'Occasional Customers';
+        color = '#f39c12';
+    } else {
+        cluster = 'New/Low-Value Customers';
+        color = '#e74c3c';
+    }
+    
+    const resultDiv = document.getElementById('clusterResult');
+    resultDiv.textContent = `Cluster: ${cluster}`;
+    resultDiv.style.background = color;
+    resultDiv.style.color = 'white';
+}
+
+// Code Suggestions
+function getCodeSuggestions() {
+    const input = document.getElementById('sqlEditor').value.toLowerCase();
+    const suggestions = document.getElementById('suggestions');
+    
+    let suggestionText = '';
+    
+    if (input.includes('select')) {
+        suggestionText = `
+            <strong>AI Suggestions:</strong>
+            <p>• SELECT customer_id, first_name, last_name</p>
+            <p>• FROM customers</p>
+            <p>• WHERE status = 'active'</p>
+            <p>• ORDER BY last_purchase_date DESC</p>
+        `;
+    } else if (input.includes('from')) {
+        suggestionText = `
+            <strong>AI Suggestions:</strong>
+            <p>• JOIN orders ON customers.id = orders.customer_id</p>
+            <p>• WHERE order_date > '2023-01-01'</p>
+            <p>• GROUP BY customer_id</p>
+        `;
+    } else {
+        suggestionText = `
+            <strong>AI Suggestions:</strong>
+            <p>• Start typing SQL keywords (SELECT, FROM, WHERE)</p>
+            <p>• Press Tab to auto-complete</p>
+            <p>• Use Ctrl+Space for suggestions</p>
+        `;
+    }
+    
+    suggestions.innerHTML = suggestionText;
+    suggestions.style.display = 'block';
+}
+
+// Azure Services
+function runAzureService() {
+    const service = document.getElementById('azureService').value;
+    const input = document.getElementById('azureInput').value;
+    const resultDiv = document.getElementById('azureResult');
+    const output = document.getElementById('azureOutput');
+    
+    let result = '';
+    
+    if (service === 'vision') {
+        result = 'Detected: Business presentation slide with charts and text. Confidence: 92%. Tags: presentation, chart, data, business.';
+    } else if (service === 'language') {
+        result = 'Sentiment: Positive (0.85). Key phrases: excellent performance, strong growth, market leadership. Entities: Company (Microsoft), Person (CEO), Location (Redmond).';
+    } else if (service === 'speech') {
+        result = 'Transcription: "The quarterly earnings call will begin at 2 PM Eastern Time. Please have your reports ready for discussion." Speaker: Female, Confidence: 96%.';
+    }
+    
+    output.textContent = result;
+    resultDiv.style.display = 'block';
+}
+
+// Data Management Functions
 function optimizeQuery() {
     document.getElementById('optimizationResult').style.display = 'block';
 }
@@ -2698,13 +2948,30 @@ function profileData() {
 }
 
 function generateReport() {
+    const type = document.getElementById('reportType').value;
+    const types = {
+        'sales': 'Q3_Sales_Report.pdf',
+        'customer': 'Customer_Analysis_Report.pdf',
+        'financial': 'Financial_Statement_Q3.pdf'
+    };
+    
+    document.getElementById('reportResult').innerHTML = `
+        <strong>✅ Report Generated!</strong>
+        <p>Download: ${types[type]}</p>
+        <p>Generated: ${new Date().toLocaleDateString()}</p>
+    `;
     document.getElementById('reportResult').style.display = 'block';
 }
 
 function inferDataTypes() {
-    document.getElementById('type1').textContent = 'Integer';
-    document.getElementById('type2').textContent = 'Date';
-    document.getElementById('type3').textContent = 'Decimal';
+    document.getElementById('type1').textContent = 'Integer (Primary Key)';
+    document.getElementById('type2').textContent = 'Date (YYYY-MM-DD)';
+    document.getElementById('type3').textContent = 'Decimal (Currency)';
+}
+
+// Visualization Chart
+function createVizChart() {
+    showChart('bar');
 }
 
 function showChart(type) {
@@ -2715,60 +2982,1497 @@ function showChart(type) {
         currentCharts.viz.destroy();
     }
     
-    const chartTypes = {
+    const configs = {
         'bar': {
             type: 'bar',
             data: {
-                labels: ['A', 'B', 'C', 'D'],
+                labels: ['Product A', 'Product B', 'Product C', 'Product D'],
                 datasets: [{
-                    label: 'Values',
-                    data: [65, 59, 80, 81],
-                    backgroundColor: '#3498db'
+                    label: 'Sales ($)',
+                    data: [65000, 59000, 80000, 81000],
+                    backgroundColor: ['#3498db', '#2ecc71', '#9b59b6', '#e74c3c'],
+                    borderWidth: 1
                 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Sales ($)'
+                        }
+                    }
+                }
             }
         },
         'line': {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                 datasets: [{
-                    label: 'Trend',
-                    data: [65, 59, 80, 81],
+                    label: 'Revenue Trend',
+                    data: [65000, 59000, 80000, 81000, 92000, 105000],
                     borderColor: '#3498db',
-                    fill: false
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
                 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Revenue ($)'
+                        }
+                    }
+                }
             }
         },
         'pie': {
             type: 'pie',
             data: {
-                labels: ['A', 'B', 'C'],
+                labels: ['Product A', 'Product B', 'Product C'],
                 datasets: [{
                     data: [30, 40, 30],
-                    backgroundColor: ['#3498db', '#2ecc71', '#9b59b6']
+                    backgroundColor: ['#3498db', '#2ecc71', '#9b59b6'],
+                    borderWidth: 1
                 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
             }
         }
     };
     
-    currentCharts.viz = new Chart(ctx, {
-        ...chartTypes[type],
+    currentCharts.viz = new Chart(ctx.getContext('2d'), configs[type]);
+}
+
+// DataRobot
+function runDataRobot() {
+    const task = document.getElementById('datarobotTask').value;
+    const results = {
+        'clustering': 'K-Means Clustering (Silhouette Score: 0.85)',
+        'regression': 'Gradient Boosting (R²: 0.92)',
+        'classification': 'Random Forest (Accuracy: 89%, AUC: 0.94)'
+    };
+    
+    document.getElementById('datarobotResult').innerHTML = `
+        <strong>✅ Model Selected!</strong>
+        <p>Best model: ${results[task]}</p>
+        <p>Training time: 2.4 minutes</p>
+    `;
+    document.getElementById('datarobotResult').style.display = 'block';
+}
+
+// Dummy Customer
+function generateDummyCustomer() {
+    const names = ['Alex Johnson', 'Maria Garcia', 'James Smith', 'Sarah Chen', 'Robert Kim'];
+    const cities = ['New York, NY', 'Los Angeles, CA', 'Chicago, IL', 'Houston, TX', 'Phoenix, AZ'];
+    const ages = [28, 35, 42, 31, 39];
+    
+    const randomIndex = Math.floor(Math.random() * names.length);
+    
+    document.querySelector('#dummyCustomer .demo-title').innerHTML = 
+        `👤 Synthetic Customer Data - ${names[randomIndex]}`;
+    
+    const customerDiv = document.querySelector('#dummyCustomer').querySelectorAll('.f8f9fa')[0];
+    customerDiv.innerHTML = `
+        <div style="padding: 8px; background: #f8f9fa; border-radius: 8px; margin: 5px 0;">
+            <strong>Customer:</strong> ${names[randomIndex]}
+        </div>
+        <div style="padding: 8px; background: #f8f9fa; border-radius: 8px; margin: 5px 0;">
+            <strong>Age:</strong> ${ages[randomIndex]}
+        </div>
+        <div style="padding: 8px; background: #f8f9fa; border-radius: 8px; margin: 5px 0;">
+            <strong>Location:</strong> ${cities[randomIndex]}
+        </div>
+        <div style="padding: 8px; background: #f8f9fa; border-radius: 8px; margin: 5px 0;">
+            <strong>Customer Since:</strong> ${2020 + Math.floor(Math.random() * 4)}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}
+        </div>
+    `;
+    
+    document.getElementById('dummyResult').style.display = 'block';
+}
+
+// Explainable AI
+function explainDecision() {
+    document.getElementById('explanation').style.display = 'block';
+}
+
+// Federated Learning
+function runFederatedLearning() {
+    const progressBars = document.querySelectorAll('#federatedLearning .progress-fill');
+    progressBars.forEach(bar => {
+        let width = 0;
+        const interval = setInterval(() => {
+            if (width >= 100) {
+                clearInterval(interval);
+                document.getElementById('federatedResult').style.display = 'block';
+            } else {
+                width += 5;
+                bar.style.width = width + '%';
+            }
+        }, 100);
+    });
+}
+
+// Gamma.app
+function generateGammaContent() {
+    const type = document.getElementById('gammaContent').value;
+    const input = document.getElementById('gammaInput').value || 'Business Analytics';
+    
+    const outputs = {
+        'presentation': `10-slide presentation on "${input}" with data visualizations and executive summary`,
+        'document': `Comprehensive 15-page document covering ${input} trends and analysis`,
+        'website': `Interactive webpage showcasing ${input} insights with responsive design`
+    };
+    
+    document.getElementById('gammaResult').innerHTML = `
+        <strong>✅ Content Created!</strong>
+        <p>${outputs[type]}</p>
+        <p>Estimated creation time saved: 3.5 hours</p>
+    `;
+    document.getElementById('gammaResult').style.display = 'block';
+}
+
+// GAN Training
+function trainGAN() {
+    const generator = document.querySelector('#GAN .e3f2fd');
+    const discriminator = document.querySelector('#GAN .fff3cd');
+    
+    let genAcc = 50;
+    let discAcc = 50;
+    
+    const interval = setInterval(() => {
+        genAcc += Math.random() * 5;
+        discAcc += Math.random() * 3;
+        
+        if (genAcc > 100) genAcc = 100;
+        if (discAcc > 100) discAcc = 100;
+        
+        generator.innerHTML = `<strong>Generator:</strong> Creating synthetic images (Accuracy: ${genAcc.toFixed(1)}%)`;
+        discriminator.innerHTML = `<strong>Discriminator:</strong> Detecting real vs fake (Accuracy: ${discAcc.toFixed(1)}%)`;
+        
+        if (genAcc >= 85 && discAcc >= 78) {
+            clearInterval(interval);
+            document.getElementById('ganResult').style.display = 'block';
+        }
+    }, 500);
+}
+
+// Generative AI
+function setupGenAISelect() {
+    showGenAIOption();
+}
+
+function showGenAIOption() {
+    const type = document.getElementById('genaiType').value;
+    const inputArea = document.getElementById('genaiInputArea');
+    const button = document.getElementById('genaiButton');
+    
+    if (!type) {
+        inputArea.style.display = 'none';
+        button.style.display = 'none';
+        return;
+    }
+    
+    const placeholders = {
+        'text': 'Describe what text you want to generate...',
+        'image': 'Describe the image you want to create...',
+        'code': 'Describe the functionality you need...'
+    };
+    
+    document.getElementById('genaiPrompt').placeholder = placeholders[type];
+    inputArea.style.display = 'block';
+    button.style.display = 'block';
+}
+
+function generateContent() {
+    const type = document.getElementById('genaiType').value;
+    const prompt = document.getElementById('genaiPrompt').value || 'sample content';
+    
+    const outputs = {
+        'text': `Based on the analysis of our customer data, we can identify three key trends: increased engagement with mobile platforms, growing demand for personalized experiences, and higher satisfaction among users who utilize our premium features. These insights suggest opportunities for targeted marketing campaigns and product enhancements.`,
+        'image': `A professional business dashboard showing key performance indicators with charts and graphs, set in a modern office environment with clean lines and a blue color scheme.`,
+        'code': `function analyzeSalesData(data) {
+    const totalSales = data.reduce((sum, item) => sum + item.amount, 0);
+    const averageSale = totalSales / data.length;
+    const topProducts = data
+        .sort((a, b) => b.amount - a.amount)
+        .slice(0, 5);
+    
+    return {
+        totalSales,
+        averageSale,
+        topProducts,
+        analysisDate: new Date().toISOString()
+    };
+}`
+    };
+    
+    document.getElementById('genaiOutput').textContent = outputs[type] || 'Content generated successfully.';
+    document.getElementById('genaiResult').style.display = 'block';
+}
+
+// Gretel.ai
+function generateSyntheticData() {
+    document.getElementById('syntheticResult').style.display = 'block';
+}
+
+// H2O.ai
+function runH2O() {
+    const task = document.getElementById('h2oTask').value;
+    const metrics = {
+        'classification': 'Gradient Boosting Machine (AUC: 0.92, Logloss: 0.24)',
+        'regression': 'Distributed Random Forest (RMSE: 1245.8, R²: 0.88)',
+        'clustering': 'K-Means (Within SSE: 2450.8, Silhouette: 0.72)'
+    };
+    
+    document.getElementById('h2oResult').innerHTML = `
+        <strong>✅ H2O AutoML Complete!</strong>
+        <p>Leaderboard model: ${metrics[task]}</p>
+        <p>Training time: 3.2 minutes across 20 models</p>
+    `;
+    document.getElementById('h2oResult').style.display = 'block';
+}
+
+// Hazy
+function generateHazyData() {
+    document.getElementById('hazyResult').style.display = 'block';
+}
+
+// IBM Watson Discovery
+function processDocument() {
+    const type = document.getElementById('documentType').value;
+    const insights = {
+        'contract': 'Key clauses: Termination (Section 4.3), Payment Terms (Section 2.1), Confidentiality (Section 5)',
+        'report': 'Key findings: Revenue growth 15%, Customer satisfaction 4.5/5, Market share increased 3%',
+        'email': 'Main topics: Project timeline, Budget approval, Team assignments, Next meeting: Friday 2 PM'
+    };
+    
+    document.getElementById('discoveryResult').innerHTML = `
+        <strong>✅ Insights Extracted!</strong>
+        <p>• ${insights[type]}</p>
+        <p>• Sentiment: Neutral/Positive</p>
+        <p>• Key entities identified: 12</p>
+    `;
+    document.getElementById('discoveryResult').style.display = 'block';
+}
+
+// Image Recognition
+function setupImageRecognition() {
+    showImageExample();
+}
+
+function showImageExample() {
+    const type = document.getElementById('imageType').value;
+    const example = document.getElementById('imageExample');
+    const button = document.getElementById('recognizeButton');
+    
+    if (!type) {
+        example.style.display = 'none';
+        button.style.display = 'none';
+        return;
+    }
+    
+    const examples = {
+        'product': 'Product Image: Smartphone on white background',
+        'document': 'Document Image: Business report with charts and tables',
+        'scene': 'Scene Image: Office environment with people working'
+    };
+    
+    example.innerHTML = `
+        <div style="padding: 12px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+            <div style="font-size: 3rem;">${type === 'product' ? '📱' : type === 'document' ? '📄' : '🏢'}</div>
+            <p>${examples[type]}</p>
+        </div>
+    `;
+    example.style.display = 'block';
+    button.style.display = 'block';
+}
+
+function recognizeImage() {
+    const type = document.getElementById('imageType').value;
+    
+    const results = {
+        'product': 'Object: Smartphone | Brand: Likely Apple iPhone | Condition: New | Confidence: 94%',
+        'document': 'Type: Business Report | Pages: 12 | Key elements: Charts, Tables, Headers | Confidence: 89%',
+        'scene': 'Setting: Modern Office | People: 3 detected | Activities: Working on computers | Objects: Desks, chairs, monitors | Confidence: 91%'
+    };
+    
+    document.getElementById('recognitionText').textContent = results[type];
+    document.getElementById('recognitionResult').style.display = 'block';
+}
+
+// Data Imputation
+function imputeData() {
+    document.getElementById('imputationResult').innerHTML = `
+        <strong>✅ Data Imputed!</strong>
+        <p>• Missing age: 38.5 (mean imputation from dataset)</p>
+        <p>• Missing status: Active (mode imputation from column)</p>
+        <p>• Imputation method: K-Nearest Neighbors (k=5)</p>
+    `;
+    document.getElementById('imputationResult').style.display = 'block';
+}
+
+// Index Recommendations
+function recommendIndex() {
+    document.getElementById('indexResult').innerHTML = `
+        <strong>✅ Index Recommendations:</strong>
+        <p>1. CREATE INDEX idx_email ON customers(email)</p>
+        <p>2. CREATE INDEX idx_date ON customers(created_date DESC)</p>
+        <p>3. CREATE INDEX idx_status_email ON customers(status, email)</p>
+        <p><strong>Estimated improvement:</strong> 85% faster queries</p>
+        <p><strong>Storage cost:</strong> Additional 245 MB</p>
+    `;
+    document.getElementById('indexResult').style.display = 'block';
+}
+
+// Infogram
+function createInfogram() {
+    const type = document.getElementById('infogramType').value;
+    const types = {
+        'infographic': 'Interactive Infographic with 5 data visualization sections',
+        'chart': 'Dynamic Chart with hover effects and data filtering',
+        'map': 'Geographic Map showing regional distribution'
+    };
+    
+    document.getElementById('infogramResult').innerHTML = `
+        <div style="font-size: 2rem;">📈</div>
+        <strong>✅ ${types[type]} Created!</strong>
+        <p>Shareable link generated | Embed code available</p>
+        <p>Estimated design time saved: 2.5 hours</p>
+    `;
+    document.getElementById('infogramResult').style.display = 'block';
+}
+
+// Intelligent Auto-completion
+function showSuggestions() {
+    document.getElementById('autoCompleteResult').style.display = 'block';
+}
+
+// Interactive Chart
+function createInteractiveChart() {
+    const ctx = document.getElementById('interactiveChart');
+    if (!ctx) return;
+    
+    currentCharts.interactive = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [
+                {
+                    label: 'Product A',
+                    data: [65000, 59000, 80000, 81000, 92000, 105000],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                },
+                {
+                    label: 'Product B',
+                    data: [45000, 52000, 61000, 58000, 72000, 68000],
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }
+            ]
+        },
         options: {
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Revenue ($)'
+                    }
+                }
+            }
         }
     });
 }
 
-// Create visualization chart
-function createVizChart() {
-    showChart('bar');
+function filterData(period) {
+    if (!currentCharts.interactive) return;
+    
+    const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    const dataA = [65000, 59000, 80000, 81000, 92000, 105000];
+    const dataB = [45000, 52000, 61000, 58000, 72000, 68000];
+    
+    let filteredLabels, filteredDataA, filteredDataB;
+    
+    if (period === 'q1') {
+        filteredLabels = labels.slice(0, 3);
+        filteredDataA = dataA.slice(0, 3);
+        filteredDataB = dataB.slice(0, 3);
+    } else if (period === 'q2') {
+        filteredLabels = labels.slice(3, 6);
+        filteredDataA = dataA.slice(3, 6);
+        filteredDataB = dataB.slice(3, 6);
+    } else {
+        filteredLabels = labels;
+        filteredDataA = dataA;
+        filteredDataB = dataB;
+    }
+    
+    currentCharts.interactive.data.labels = filteredLabels;
+    currentCharts.interactive.data.datasets[0].data = filteredDataA;
+    currentCharts.interactive.data.datasets[1].data = filteredDataB;
+    currentCharts.interactive.update();
 }
 
-// Continue with more functions as needed...
+// Join Optimization
+function optimizeJoins() {
+    document.getElementById('joinResult').style.display = 'block';
+}
 
-// Note: Due to the extensive nature of this implementation (86 terms),
-// I've provided the complete structure with all terms defined.
-// Each term has its own interactive example template.
-// The actual implementation of all example functions would be quite lengthy,
-// but this gives you the complete framework with working examples for key terms.
+// Machine Learning Types
+function setupMLTypeSelect() {
+    showMLExample();
+}
+
+function showMLExample() {
+    const type = document.getElementById('mlType').value;
+    const example = document.getElementById('mlExample');
+    const desc = document.getElementById('mlDesc');
+    
+    if (!type) {
+        example.style.display = 'none';
+        return;
+    }
+    
+    const examples = {
+        'supervised': 'Email spam classification: Model trained on labeled emails (spam/not spam) learns to classify new emails.',
+        'unsupervised': 'Customer segmentation: Algorithm groups customers based on purchase behavior without predefined categories.',
+        'reinforcement': 'Inventory optimization: System learns optimal stock levels through trial and error with reward signals.'
+    };
+    
+    desc.textContent = examples[type];
+    example.style.display = 'block';
+}
+
+// Measurement Bias
+function fixMeasurementBias() {
+    document.getElementById('measurementResult').innerHTML = `
+        <strong>✅ Bias Fixed:</strong>
+        <p>• Revised question: "How satisfied are you with our service?" (neutral wording)</p>
+        <p>• Response scale: Changed to 1-5 Likert scale</p>
+        <p>• Added validation: Check for straight-line responses</p>
+        <p>• Response accuracy improved by 42%</p>
+        <p>• Data quality score: 92/100</p>
+    `;
+    document.getElementById('measurementResult').style.display = 'block';
+}
+
+// Misrepresentation
+function fixMisrepresentation() {
+    document.getElementById('representationResult').innerHTML = `
+        <strong>✅ Representation Fixed:</strong>
+        <p>• Chart Y-axis now starts at 0 (accurate proportional differences)</p>
+        <p>• Added data labels for exact values</p>
+        <p>• Included error bars showing confidence intervals</p>
+        <p>• Added context: Sample size and margin of error displayed</p>
+        <p>• Data transparency score: 95/100</p>
+    `;
+    document.getElementById('representationResult').style.display = 'block';
+}
+
+// Mostly AI
+function generateMostlyAIData() {
+    document.getElementById('mostlyAIResult').innerHTML = `
+        <strong>✅ Synthetic Data Generated!</strong>
+        <p>• Statistical properties preserved with 98% accuracy</p>
+        <p>• Differential privacy guarantee (ε=1.0)</p>
+        <p>• Ready for testing and analytics</p>
+    `;
+    document.getElementById('mostlyAIResult').style.display = 'block';
+}
+
+// Multidimensional Baselining
+function updateBaseline() {
+    document.getElementById('baselineResult').style.display = 'block';
+}
+
+// Narrative Science
+function generateNarrative() {
+    const input = document.getElementById('narrativeData').value || 
+                  'Sales increased 15% in Q3, customer satisfaction 4.5/5, market share grew 3%';
+    
+    document.getElementById('narrativeResult').innerHTML = `
+        <strong>📖 Data Story:</strong>
+        <p>"Our business demonstrated strong performance in the third quarter, achieving a 15% increase in sales compared to the previous period. Customer satisfaction remained high with an average rating of 4.5 out of 5, reflecting positive customer experiences. Additionally, we expanded our market presence with a 3% growth in market share, indicating successful competitive positioning."</p>
+        <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Generated narrative includes: Key metrics, business context, and actionable insights.</p>
+    `;
+    document.getElementById('narrativeResult').style.display = 'block';
+}
+
+// Natural Language Generation
+function generateNLG() {
+    const input = document.getElementById('nlgInput').value || 
+                  'Q3 sales: $245K, growth: 15%, top product: Laptop Pro';
+    
+    document.getElementById('nlgResult').innerHTML = `
+        <strong>✅ Generated Text:</strong>
+        <p>"The third quarter yielded impressive results with sales reaching $245,000, marking a substantial 15% growth from the previous quarter. This performance was primarily driven by the Laptop Pro, which emerged as our best-selling product during this period, demonstrating strong market demand and customer preference for our premium offerings."</p>
+    `;
+    document.getElementById('nlgResult').style.display = 'block';
+}
+
+// Natural Language Processing
+function setupNLPSelect() {
+    showNLPExample();
+}
+
+function showNLPExample() {
+    const task = document.getElementById('nlpTask').value;
+    const example = document.getElementById('nlpExample');
+    const button = document.getElementById('nlpButton');
+    
+    if (!task) {
+        example.style.display = 'none';
+        button.style.display = 'none';
+        return;
+    }
+    
+    const examples = {
+        'sentiment': 'The product exceeded all expectations and the customer service was exceptional!',
+        'entities': 'Apple Inc. announced new products at their Cupertino headquarters in California.',
+        'summarization': 'The quarterly report indicates strong growth across all regions. Sales increased by 15% and customer satisfaction reached record levels. However, operational costs also rose by 8%, requiring further optimization.'
+    };
+    
+    document.getElementById('nlpInput').value = examples[task];
+    example.style.display = 'block';
+    button.style.display = 'block';
+}
+
+function runNLP() {
+    const task = document.getElementById('nlpTask').value;
+    const input = document.getElementById('nlpInput').value;
+    
+    let result = '';
+    
+    switch(task) {
+        case 'sentiment':
+            const positiveWords = ['excellent', 'great', 'amazing', 'exceptional', 'love', 'best'];
+            const hasPositive = positiveWords.some(word => input.toLowerCase().includes(word));
+            result = hasPositive ? 'Sentiment: Positive (Confidence: 92%)' : 'Sentiment: Neutral (Confidence: 76%)';
+            break;
+        case 'entities':
+            result = 'Entities detected: Organization (Apple Inc.), Location (Cupertino, California), Event (product announcement)';
+            break;
+        case 'summarization':
+            result = 'Summary: Strong quarterly growth with 15% sales increase and high customer satisfaction, though operational costs rose by 8%.';
+            break;
+    }
+    
+    document.getElementById('nlpOutput').textContent = result;
+    document.getElementById('nlpResult').style.display = 'block';
+}
+
+// NLP Engine
+function processWithNLPEngine() {
+    const input = document.getElementById('engineInput').value || 
+                  'The customer satisfaction survey showed positive results with 85% approval rating.';
+    
+    document.getElementById('engineResult').innerHTML = `
+        <strong>✅ NLP Processing Complete:</strong>
+        <p>• Sentiment: Positive (Score: 0.85)</p>
+        <p>• Key Entities: customer satisfaction survey, approval rating</p>
+        <p>• Key Phrases: "85% approval rating", "positive results"</p>
+        <p>• Language: English (Confidence: 99%)</p>
+        <p>• Categories: Customer Feedback, Business Metrics</p>
+    `;
+    document.getElementById('engineResult').style.display = 'block';
+}
+
+// Otter.ai Transcription
+function transcribeAudio() {
+    document.getElementById('transcriptionResult').innerHTML = `
+        <strong>✅ Transcription Complete:</strong>
+        <p>"Our Q3 sales increased by 15 percent compared to last quarter, driven primarily by strong performance in the Western region. Customer satisfaction scores also improved, reaching an all-time high of 4.8 out of 5."</p>
+        <p>• Speaker identification: Sales Manager (Confidence: 95%)</p>
+        <p>• Keywords: Q3, sales, increased, 15 percent, customer satisfaction</p>
+        <p>• Meeting duration: 2 minutes, 15 seconds</p>
+    `;
+    document.getElementById('transcriptionResult').style.display = 'block';
+}
+
+// Outerbase
+function runDBAction() {
+    const action = document.getElementById('dbAction').value;
+    
+    const results = {
+        'query': 'Query executed: SELECT * FROM customers WHERE status="active" LIMIT 100',
+        'schema': 'Schema analyzed: 15 tables, 245 columns, 3.2M rows total',
+        'optimize': 'Database optimized: Indexes rebuilt, query cache cleared, performance improved 35%'
+    };
+    
+    document.getElementById('dbResult').innerHTML = `
+        <strong>✅ Database Action Complete:</strong>
+        <p>${results[action]}</p>
+        <p>Execution time: 0.4 seconds</p>
+        <p>Rows affected: ${action === 'query' ? '245' : '0'}</p>
+    `;
+    document.getElementById('dbResult').style.display = 'block';
+}
+
+// Overfitting Chart
+function createOverfittingChart() {
+    const ctx = document.getElementById('overfittingChart');
+    if (!ctx) return;
+    
+    currentCharts.overfitting = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 20}, (_, i) => `Point ${i+1}`),
+            datasets: [
+                {
+                    label: 'Training Data',
+                    data: Array.from({length: 20}, () => Math.random() * 100),
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0
+                },
+                {
+                    label: 'Simple Model',
+                    data: Array.from({length: 20}, (_, i) => 50 + i * 2 + Math.random() * 10),
+                    borderColor: '#2ecc71',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+                {
+                    label: 'Complex Model',
+                    data: Array.from({length: 20}, (_, i) => 50 + i * 2 + Math.random() * 30 - 15),
+                    borderColor: '#e74c3c',
+                    borderWidth: 3,
+                    tension: 0.8
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Prediction Value'
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Picture Classification
+function classifyImage() {
+    document.getElementById('classificationResult').innerHTML = `
+        <strong>✅ Classification Result:</strong>
+        <p>Category: Electronics / Mobile Devices</p>
+        <p>Confidence: 94%</p>
+        <p>Labels: smartphone, mobile device, technology, electronics, communication</p>
+        <p>Brand Prediction: Apple iPhone (65% confidence)</p>
+        <p>Condition: New (88% confidence)</p>
+    `;
+    document.getElementById('classificationResult').style.display = 'block';
+}
+
+// Power BI Chart
+function createPowerBIChart() {
+    const ctx = document.getElementById('powerBIChart');
+    if (!ctx) return;
+    
+    currentCharts.powerBI = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Sales Trend',
+                data: [85000, 92000, 105000, 98000, 112000, 125000],
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Sales ($)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function refreshPowerBI() {
+    if (currentCharts.powerBI) {
+        const newData = currentCharts.powerBI.data.datasets[0].data.map(
+            val => val + Math.random() * 10000 - 5000
+        );
+        currentCharts.powerBI.data.datasets[0].data = newData;
+        currentCharts.powerBI.update();
+        
+        // Update dashboard numbers
+        const regions = document.querySelectorAll('#powerBI .control-btn + div div');
+        if (regions.length >= 2) {
+            const west = 124000 + Math.floor(Math.random() * 10000);
+            const east = 98000 + Math.floor(Math.random() * 8000);
+            regions[0].innerHTML = `<span>West</span><span>$${west.toLocaleString()}</span>`;
+            regions[1].innerHTML = `<span>East</span><span>$${east.toLocaleString()}</span>`;
+        }
+    }
+}
+
+// Predictive Chart
+function createPredictiveChart() {
+    const ctx = document.getElementById('predictiveChart');
+    if (!ctx) return;
+    
+    const historical = [85, 92, 105, 98, 112, 125];
+    const predicted = [130, 138, 145, 152, 160];
+    
+    currentCharts.predictive = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+            datasets: [
+                {
+                    label: 'Historical',
+                    data: [...historical, ...Array(predicted.length).fill(null)],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0.4
+                },
+                {
+                    label: 'Prediction',
+                    data: [...Array(historical.length).fill(null), ...predicted],
+                    borderColor: '#e74c3c',
+                    borderWidth: 3,
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.4
+                },
+                {
+                    label: 'Confidence Interval',
+                    data: [...Array(historical.length).fill(null), ...predicted.map(v => v * 1.05)],
+                    borderColor: 'rgba(231, 76, 60, 0.3)',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    borderWidth: 1,
+                    fill: '+1',
+                    tension: 0.4
+                },
+                {
+                    label: '',
+                    data: [...Array(historical.length).fill(null), ...predicted.map(v => v * 0.95)],
+                    borderColor: 'rgba(231, 76, 60, 0.3)',
+                    borderWidth: 1,
+                    fill: false,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        filter: function(item, chart) {
+                            return !item.text || item.text.length > 0;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Sales ($ thousands)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updatePrediction(scenario) {
+    if (!currentCharts.predictive) return;
+    
+    const factors = {
+        'optimistic': 1.1,
+        'neutral': 1.0,
+        'pessimistic': 0.9
+    };
+    
+    const base = [130, 138, 145, 152, 160];
+    const adjusted = base.map(v => v * factors[scenario]);
+    
+    // Update prediction line
+    currentCharts.predictive.data.datasets[1].data = [
+        ...Array(6).fill(null),
+        ...adjusted
+    ];
+    
+    // Update confidence interval
+    currentCharts.predictive.data.datasets[2].data = [
+        ...Array(6).fill(null),
+        ...adjusted.map(v => v * 1.05)
+    ];
+    
+    currentCharts.predictive.data.datasets[3].data = [
+        ...Array(6).fill(null),
+        ...adjusted.map(v => v * 0.95)
+    ];
+    
+    currentCharts.predictive.update();
+    
+    // Update prediction text
+    const nextQuarter = adjusted[2];
+    const range = nextQuarter * 0.05;
+    document.querySelector('#predictiveChart').parentElement.innerHTML += 
+        `<div style="margin-top: 10px; padding: 8px; background: #e8f4f8; border-radius: 8px;">
+            <strong>Updated Prediction (${scenario} scenario):</strong> Next quarter sales: $${Math.round(nextQuarter)}K ± $${Math.round(range)}K
+        </div>`;
+}
+
+// Qlik Sense
+function associateData() {
+    document.getElementById('qlikResult').innerHTML = `
+        <strong>✅ Data Associated!</strong>
+        <p>• Found 3 strong associations between sentiment and churn risk</p>
+        <p>• Negative reviews correlate with 45% higher churn probability</p>
+        <p>• Positive reviews with low engagement still show 25% churn risk</p>
+        <p>• Association strength: 0.78 (Strong)</p>
+    `;
+    document.getElementById('qlikResult').style.display = 'block';
+}
+
+// Scenario Modeling
+function setupScenarioSlider() {
+    updateScenario();
+}
+
+function updateScenario() {
+    const value = document.getElementById('scenarioSlider').value;
+    document.getElementById('scenarioValue').textContent = value;
+}
+
+function runScenario() {
+    const type = document.getElementById('scenarioType').value;
+    const value = parseInt(document.getElementById('scenarioValue').value);
+    
+    const impacts = {
+        'price': {
+            revenue: value * 0.8,
+            profit: value * 1.2,
+            volume: -value * 0.5
+        },
+        'demand': {
+            revenue: value * 1.5,
+            profit: value * 1.3,
+            volume: value * 1.2
+        },
+        'cost': {
+            revenue: 0,
+            profit: value * 1.8,
+            volume: 0
+        }
+    };
+    
+    const impact = impacts[type];
+    
+    document.getElementById('revenueImpact').textContent = impact.revenue.toFixed(1);
+    document.getElementById('profitImpact').textContent = impact.profit.toFixed(1);
+    
+    document.getElementById('scenarioResult').innerHTML = `
+        <strong>Scenario Results (${value}% ${type} change):</strong>
+        <p>• Revenue impact: ${impact.revenue >= 0 ? '+' : ''}${impact.revenue.toFixed(1)}%</p>
+        <p>• Profit impact: ${impact.profit >= 0 ? '+' : ''}${impact.profit.toFixed(1)}%</p>
+        <p>• Volume impact: ${impact.volume >= 0 ? '+' : ''}${impact.volume.toFixed(1)}%</p>
+        <p>• Break-even point: ${(value / 2).toFixed(1)}%</p>
+    `;
+    document.getElementById('scenarioResult').style.display = 'block';
+}
+
+// Segmentation
+function segmentData() {
+    const field = document.getElementById('segmentationField').value;
+    
+    const segments = {
+        'region': ['West (35%)', 'East (28%)', 'Central (22%)', 'South (15%)'],
+        'age': ['18-25 (15%)', '26-35 (30%)', '36-50 (35%)', '51-65 (18%)', '65+ (2%)'],
+        'value': ['High Value (8%)', 'Medium Value (25%)', 'Low Value (42%)', 'New (25%)']
+    };
+    
+    const segmentList = segments[field].map(s => `<p>• ${s}</p>`).join('');
+    
+    document.getElementById('segmentationResult').innerHTML = `
+        <strong>✅ Data Segmented by ${field.replace(/^./, c => c.toUpperCase())}!</strong>
+        <p>45,238 records divided into ${segments[field].length} segments:</p>
+        ${segmentList}
+        <p>Segmentation quality score: 0.85/1.0</p>
+    `;
+    document.getElementById('segmentationResult').style.display = 'block';
+}
+
+// Semi-supervised Learning
+function runSemiSupervised() {
+    document.getElementById('semiResult').innerHTML = `
+        <strong>✅ Semi-supervised Learning Complete!</strong>
+        <p>• 9,542 unlabeled records classified using 1,000 labeled examples</p>
+        <p>• Model accuracy: 88% (validated on test set)</p>
+        <p>• Label propagation efficiency: 92% of unlabeled data successfully labeled</p>
+        <p>• Time saved vs. manual labeling: 95%</p>
+    `;
+    document.getElementById('semiResult').style.display = 'block';
+}
+
+// Sentiment Analysis
+function analyzeSentiment() {
+    const input = document.getElementById('sentimentInput').value.toLowerCase();
+    
+    let sentiment = 'Neutral';
+    let emoji = '😐';
+    let confidence = 75;
+    
+    const positiveWords = ['amazing', 'excellent', 'great', 'love', 'best', 'exceeded', 'fast', 'perfect', 'wonderful'];
+    const negativeWords = ['terrible', 'awful', 'horrible', 'disappointed', 'bad', 'slow', 'broken', 'useless'];
+    
+    let positiveCount = 0;
+    let negativeCount = 0;
+    
+    positiveWords.forEach(word => {
+        if (input.includes(word)) positiveCount++;
+    });
+    
+    negativeWords.forEach(word => {
+        if (input.includes(word)) negativeCount++;
+    });
+    
+    if (positiveCount > negativeCount) {
+        sentiment = 'Positive';
+        emoji = '😊';
+        confidence = 70 + (positiveCount * 5);
+    } else if (negativeCount > positiveCount) {
+        sentiment = 'Negative';
+        emoji = '😞';
+        confidence = 70 + (negativeCount * 5);
+    }
+    
+    if (confidence > 100) confidence = 100;
+    
+    document.getElementById('sentimentEmoji').textContent = emoji;
+    document.getElementById('sentimentText').textContent = sentiment;
+    document.getElementById('sentimentConfidence').textContent = `${confidence}%`;
+    document.getElementById('sentimentResult').style.display = 'block';
+}
+
+// SHAP Values
+function calculateSHAP() {
+    document.getElementById('shapResult').innerHTML = `
+        <strong>SHAP Explanation for Churn Prediction:</strong>
+        <p>Feature contributions to "Will Churn" prediction (85% probability):</p>
+        <p>• Last login >30 days ago: <span style="color: #e74c3c;">+0.35</span> (increases churn probability)</p>
+        <p>• Support tickets >5: <span style="color: #e74c3c;">+0.28</span></p>
+        <p>• Monthly usage <10 hours: <span style="color: #e74c3c;">+0.22</span></p>
+        <p>• Customer tenure <6 months: <span style="color: #e74c3c;">+0.15</span></p>
+        <p>• Premium subscription: <span style="color: #27ae60;">-0.18</span> (decreases churn probability)</p>
+        <p>• Recent purchase: <span style="color: #27ae60;">-0.12</span></p>
+        <p style="margin-top: 10px; font-size: 0.9rem;"><strong>Interpretation:</strong> Customer inactivity and support issues are strongest predictors of churn.</p>
+    `;
+    document.getElementById('shapResult').style.display = 'block';
+}
+
+// Speech Synthesis
+function synthesizeSpeech() {
+    const input = document.getElementById('speechInput').value || 
+                  'Sales increased by 15 percent in the third quarter.';
+    
+    document.getElementById('speechResult').innerHTML = `
+        <div style="font-size: 2rem;">🔊</div>
+        <strong>✅ Speech Synthesized!</strong>
+        <p>Text: "${input.substring(0, 50)}${input.length > 50 ? '...' : ''}"</p>
+        <p>Audio file: speech_output.mp3</p>
+        <p>Voice: Natural-sounding female voice (Emma)</p>
+        <p>Duration: ${Math.ceil(input.length / 15)} seconds</p>
+        <p>Sample rate: 44.1 kHz | Bitrate: 128 kbps</p>
+        <button class="control-btn" style="margin-top: 10px;" onclick="playAudioSample()">
+            <i class="fas fa-play"></i> Play Sample
+        </button>
+    `;
+    document.getElementById('speechResult').style.display = 'block';
+}
+
+function playAudioSample() {
+    alert('Audio sample would play here. In a real implementation, this would use the Web Speech API.');
+}
+
+// SQL Generation
+function generateSQL() {
+    const prompt = document.getElementById('sqlPrompt').value || 
+                  'Show me all customers from California who spent more than $1000 last month';
+    
+    document.getElementById('sqlCode').textContent = `-- AI-generated SQL query
+-- Generated from: "${prompt}"
+
+SELECT 
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    c.email,
+    c.state,
+    SUM(o.amount) as total_spent,
+    COUNT(o.order_id) as order_count,
+    MAX(o.order_date) as last_order_date
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+WHERE c.state = 'CA'
+    AND o.order_date >= DATEADD(month, -1, GETDATE())
+    AND o.status = 'completed'
+GROUP BY 
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    c.email,
+    c.state
+HAVING SUM(o.amount) > 1000
+ORDER BY total_spent DESC
+LIMIT 100;`;
+    
+    document.getElementById('sqlResult').style.display = 'block';
+}
+
+// SQL Examples
+function setupSQLExamples() {
+    showSQLExample();
+}
+
+function showSQLExample() {
+    const command = document.getElementById('sqlCommand').value;
+    const example = document.getElementById('sqlExample');
+    const code = document.getElementById('sqlExampleCode');
+    
+    if (!command) {
+        example.style.display = 'none';
+        return;
+    }
+    
+    const examples = {
+        'select': `-- SELECT: Retrieve data from a table
+SELECT 
+    customer_id,
+    first_name,
+    last_name,
+    email,
+    signup_date
+FROM customers
+WHERE status = 'active'
+    AND signup_date >= '2023-01-01'
+ORDER BY signup_date DESC
+LIMIT 10;`,
+        'insert': `-- INSERT: Add new records to a table
+INSERT INTO customers (
+    first_name,
+    last_name,
+    email,
+    status,
+    signup_date
+) VALUES 
+    ('John', 'Smith', 'john.smith@email.com', 'active', CURRENT_DATE),
+    ('Sarah', 'Johnson', 'sarah.j@email.com', 'active', CURRENT_DATE),
+    ('Mike', 'Williams', 'mike.w@email.com', 'pending', CURRENT_DATE);`,
+        'update': `-- UPDATE: Modify existing records
+UPDATE customers
+SET 
+    status = 'active',
+    last_login = CURRENT_TIMESTAMP,
+    login_count = login_count + 1
+WHERE customer_id = 1001
+    AND status = 'pending';`,
+        'delete': `-- DELETE: Remove records from a table
+DELETE FROM customers
+WHERE status = 'inactive'
+    AND last_login < DATEADD(year, -2, GETDATE());`
+    };
+    
+    code.textContent = examples[command];
+    example.style.display = 'block';
+}
+
+// Tableau
+function createTableauViz() {
+    document.getElementById('tableauResult').innerHTML = `
+        <strong>✅ Tableau Workbook Created!</strong>
+        <p>• Interactive dashboard with 5 visualizations</p>
+        <p>• Data sources connected: Sales, Customers, Products</p>
+        <p>• Filters applied: Date range, Region, Product category</p>
+        <p>• Calculated fields: Growth rate, Running total, YoY comparison</p>
+        <p>• Shareable link: https://tableau.example.com/dashboards/1234</p>
+    `;
+    document.getElementById('tableauResult').style.display = 'block';
+}
+
+// text2sql.ai
+function convertTextToSQL() {
+    const input = document.getElementById('text2sqlInput').value || 
+                  'Find customers who made purchases in the last 7 days and spent more than $500';
+    
+    document.querySelector('#text2sqlResult pre').textContent = `-- Generated by text2sql.ai
+-- Query for: "${input}"
+
+WITH recent_customers AS (
+    SELECT 
+        c.customer_id,
+        c.first_name,
+        c.last_name,
+        c.email,
+        c.phone,
+        c.signup_date,
+        COUNT(DISTINCT o.order_id) as purchase_count,
+        SUM(o.total_amount) as total_spent,
+        MAX(o.order_date) as last_purchase_date
+    FROM customers c
+    INNER JOIN orders o ON c.customer_id = o.customer_id
+    WHERE o.order_status = 'completed'
+        AND o.order_date >= CURRENT_DATE - INTERVAL '7 days'
+    GROUP BY 
+        c.customer_id,
+        c.first_name,
+        c.last_name,
+        c.email,
+        c.phone,
+        c.signup_date
+    HAVING SUM(o.total_amount) > 500
+)
+SELECT 
+    customer_id,
+    first_name || ' ' || last_name as customer_name,
+    email,
+    purchase_count,
+    total_spent,
+    last_purchase_date,
+    CASE 
+        WHEN total_spent > 1000 THEN 'High Value'
+        WHEN total_spent > 500 THEN 'Medium Value'
+        ELSE 'Standard'
+    END as customer_segment
+FROM recent_customers
+ORDER BY total_spent DESC
+LIMIT 50;`;
+    
+    document.getElementById('text2sqlResult').style.display = 'block';
+}
+
+// Transformers
+function runTransformer() {
+    document.getElementById('transformerResult').innerHTML = `
+        <strong>✅ Transformer Model Output:</strong>
+        <p><strong>Input:</strong> "The quarterly sales report showed significant growth in"</p>
+        <p><strong>Output:</strong> "The quarterly sales report showed significant growth in the European markets, with a 25% increase compared to the previous quarter. This performance was driven by successful marketing campaigns and new product launches."</p>
+        <p><strong>Model:</strong> GPT-3.5 (175B parameters)</p>
+        <p><strong>Inference time:</strong> 1.2 seconds</p>
+        <p><strong>Tokens generated:</strong> 28</p>
+    `;
+    document.getElementById('transformerResult').style.display = 'block';
+}
+
+// Variational Autoencoder
+function runVAE() {
+    document.getElementById('vaeResult').innerHTML = `
+        <strong>✅ VAE Training Complete!</strong>
+        <p>• Input dimension: 784 (28×28 image)</p>
+        <p>• Latent space dimension: 32 (compressed representation)</p>
+        <p>• Reconstruction dimension: 784 (reconstructed image)</p>
+        <p>• Training loss: 0.023 (KL Divergence + Reconstruction)</p>
+        <p>• Validation loss: 0.027</p>
+        <p>• Training time: 45 minutes (100 epochs)</p>
+        <p>• Sample generation quality: 4.2/5.0 (human evaluation)</p>
+    `;
+    document.getElementById('vaeResult').style.display = 'block';
+}
+
+// Schema Analysis Performance
+function analyzeSchemaPerformance() {
+    document.getElementById('schemaPerformance').innerHTML = `
+        <strong>Schema Performance Analysis:</strong>
+        <p>• Estimated rows affected: 45,238</p>
+        <p>• Current execution plan: Full table scan</p>
+        <p>• Estimated cost: 2.3 (high)</p>
+        <p><strong>Recommendations:</strong></p>
+        <p>1. Create index: CREATE INDEX idx_date ON large_table(date)</p>
+        <p>2. Add covering index: CREATE INDEX idx_date_covering ON large_table(date) INCLUDE (column1, column2, column3)</p>
+        <p>3. Partition table by date range</p>
+        <p><strong>Expected improvement:</strong> Cost reduced to 0.4 (83% faster)</p>
+    `;
+    document.getElementById('schemaPerformance').style.display = 'block';
+}
+
+// Additional helper functions
+function analyzeSchemaPerformance() {
+    document.getElementById('schemaPerformance').innerHTML = `
+        <strong>Schema Performance Analysis:</strong>
+        <p>• Estimated rows affected: 45,238</p>
+        <p>• Current execution plan: Full table scan</p>
+        <p>• Estimated cost: 2.3 (high)</p>
+        <p><strong>Recommendations:</strong></p>
+        <p>1. Create index: CREATE INDEX idx_date ON large_table(date)</p>
+        <p>2. Add covering index: CREATE INDEX idx_date_covering ON large_table(date) INCLUDE (column1, column2, column3)</p>
+        <p>3. Partition table by date range</p>
+        <p><strong>Expected improvement:</strong> Cost reduced to 0.4 (83% faster)</p>
+    `;
+    document.getElementById('schemaPerformance').style.display = 'block';
+}
+
+function runAzureService() {
+    const service = document.getElementById('azureService').value;
+    const input = document.getElementById('azureInput').value;
+    
+    let result = '';
+    switch(service) {
+        case 'vision':
+            result = 'Detected: Business presentation slide with charts and text. Confidence: 92%. Tags: presentation, chart, data, business.';
+            break;
+        case 'language':
+            result = 'Sentiment: Positive (0.85). Key phrases: excellent performance, strong growth, market leadership. Entities: Company (Microsoft), Person (CEO), Location (Redmond).';
+            break;
+        case 'speech':
+            result = 'Transcription: "The quarterly earnings call will begin at 2 PM Eastern Time. Please have your reports ready for discussion." Speaker: Female, Confidence: 96%.';
+            break;
+    }
+    
+    document.getElementById('azureOutput').textContent = result;
+    document.getElementById('azureResult').style.display = 'block';
+}
+
+// Fix any missing data table functions
+function fixMeasurementBias() {
+    document.getElementById('measurementResult').innerHTML = `
+        <strong>✅ Bias Fixed:</strong>
+        <p>• Revised question: "How satisfied are you with our service?" (neutral wording)</p>
+        <p>• Response scale: Changed to 1-5 Likert scale</p>
+        <p>• Added validation: Check for straight-line responses</p>
+        <p>• Response accuracy improved by 42%</p>
+        <p>• Data quality score: 92/100</p>
+    `;
+    document.getElementById('measurementResult').style.display = 'block';
+}
+
+function fixMisrepresentation() {
+    document.getElementById('representationResult').innerHTML = `
+        <strong>✅ Representation Fixed:</strong>
+        <p>• Chart Y-axis now starts at 0 (accurate proportional differences)</p>
+        <p>• Added data labels for exact values</p>
+        <p>• Included error bars showing confidence intervals</p>
+        <p>• Added context: Sample size and margin of error displayed</p>
+        <p>• Data transparency score: 95/100</p>
+    `;
+    document.getElementById('representationResult').style.display = 'block';
+}
+
+// Add keyboard navigation
+document.addEventListener('keydown', function(e) {
+    const modal = document.getElementById('termModal');
+    if (modal.style.display === 'flex') {
+        if (e.key === 'ArrowLeft') {
+            // Navigate to previous term
+            navigateTerm(-1);
+        } else if (e.key === 'ArrowRight') {
+            // Navigate to next term
+            navigateTerm(1);
+        }
+    }
+});
+
+function navigateTerm(direction) {
+    if (!activeExampleId) return;
+    
+    const currentIndex = glossaryData.findIndex(t => t.id === activeExampleId);
+    if (currentIndex === -1) return;
+    
+    const newIndex = (currentIndex + direction + glossaryData.length) % glossaryData.length;
+    openModal(glossaryData[newIndex].id);
+}
+
+// Add loading state for better UX
+function showLoading(containerId) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        const originalHTML = container.innerHTML;
+        container.innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+                <div class="spinner"></div>
+                <p>Loading example...</p>
+            </div>
+        `;
+        setTimeout(() => {
+            container.innerHTML = originalHTML;
+        }, 800);
+    }
+}
+
+// Add CSS for spinner
+const style = document.createElement('style');
+style.textContent = `
+    .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .term-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .term-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .modal-content {
+        animation: modalFadeIn 0.3s ease;
+    }
+    
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Make sure all chart canvases are properly sized
+window.addEventListener('resize', function() {
+    Object.values(currentCharts).forEach(chart => {
+        if (chart && typeof chart.resize === 'function') {
+            chart.resize();
+        }
+    });
+});
+
+// Add tooltip to category badges
+document.addEventListener('mouseover', function(e) {
+    if (e.target.classList.contains('term-category')) {
+        const category = e.target.textContent;
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
+        tooltip.textContent = `Filter by ${category}`;
+        tooltip.style.position = 'absolute';
+        tooltip.style.background = '#333';
+        tooltip.style.color = 'white';
+        tooltip.style.padding = '5px 10px';
+        tooltip.style.borderRadius = '4px';
+        tooltip.style.fontSize = '12px';
+        tooltip.style.zIndex = '1000';
+        document.body.appendChild(tooltip);
+        
+        const rect = e.target.getBoundingClientRect();
+        tooltip.style.left = rect.left + 'px';
+        tooltip.style.top = (rect.top - 30) + 'px';
+        
+        e.target._tooltip = tooltip;
+    }
+}, true);
+
+document.addEventListener('mouseout', function(e) {
+    if (e.target.classList.contains('term-category') && e.target._tooltip) {
+        e.target._tooltip.remove();
+        e.target._tooltip = null;
+    }
+}, true);
+
+// Initialize any remaining interactive elements
+function initializeRemainingElements() {
+    // Setup any remaining select elements
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        if (!select.hasAttribute('data-initialized')) {
+            select.setAttribute('data-initialized', 'true');
+            select.addEventListener('change', function() {
+                const termId = activeExampleId;
+                if (termId) {
+                    // Re-initialize based on select change
+                    const term = glossaryData.find(t => t.id === termId);
+                    if (term) {
+                        initializeExample(term);
+                    }
+                }
+            });
+        }
+    });
+}
+
+// Call this after modal opens
+setTimeout(initializeRemainingElements, 100);
