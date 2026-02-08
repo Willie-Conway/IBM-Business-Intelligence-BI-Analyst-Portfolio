@@ -1,0 +1,101 @@
+customer_id,transaction_id,transaction_date,transaction_amount,product_category,payment_method,month
+39,T0001,2023-01-01,18,Electronics,Cash,2023-01
+29,T0002,2023-01-02,138,Clothing,Debit Card,2023-01
+15,T0003,2023-01-03,145,Clothing,Credit Card,2023-01
+43,T0004,2023-01-04,72,Grocery,Debit Card,2023-01
+8,T0005,2023-01-05,148,Grocery,Credit Card,2023-01
+21,T0006,2023-01-06,90,Grocery,Cash,2023-01
+39,T0007,2023-01-07,172,Grocery,Credit Card,2023-01
+19,T0008,2023-01-08,298,Electronics,Credit Card,2023-01
+23,T0009,2023-01-09,270,Grocery,Credit Card,2023-01
+11,T0010,2023-01-10,240,Clothing,Cash,2023-01
+11,T0011,2023-01-11,50,Electronics,Cash,2023-01
+24,T0012,2023-01-12,37,Clothing,Credit Card,2023-01
+36,T0013,2023-01-13,144,Clothing,Credit Card,2023-01
+40,T0014,2023-01-14,210,Clothing,Debit Card,2023-01
+24,T0015,2023-01-15,277,Grocery,Credit Card,2023-01
+3,T0016,2023-01-16,42,Grocery,Debit Card,2023-01
+22,T0017,2023-01-17,57,Electronics,Credit Card,2023-01
+2,T0018,2023-01-18,71,Electronics,Debit Card,2023-01
+24,T0019,2023-01-19,225,Grocery,Cash,2023-01
+44,T0020,2023-01-20,108,Clothing,Credit Card,2023-01
+30,T0021,2023-01-21,181,Electronics,Credit Card,2023-01
+38,T0022,2023-01-22,223,Grocery,Credit Card,2023-01
+2,T0023,2023-01-23,44,Grocery,Credit Card,2023-01
+21,T0024,2023-01-24,236,Grocery,Debit Card,2023-01
+33,T0025,2023-01-25,110,Clothing,Credit Card,2023-01
+12,T0026,2023-01-26,140,Grocery,Cash,2023-01
+22,T0027,2023-01-27,266,Grocery,Cash,2023-01
+44,T0028,2023-01-28,14,Grocery,Credit Card,2023-01
+25,T0029,2023-01-29,227,Grocery,Cash,2023-01
+49,T0030,2023-01-30,264,Electronics,Credit Card,2023-01
+27,T0031,2023-01-31,292,Electronics,Credit Card,2023-01
+42,T0032,2023-02-01,216,Grocery,Cash,2023-02
+28,T0033,2023-02-02,24,Clothing,Credit Card,2023-02
+16,T0034,2023-02-03,51,Electronics,Cash,2023-02
+15,T0035,2023-02-04,188,Grocery,Debit Card,2023-02
+47,T0036,2023-02-05,72,Electronics,Credit Card,2023-02
+44,T0037,2023-02-06,240,Electronics,Debit Card,2023-02
+3,T0038,2023-02-07,250,Clothing,Cash,2023-02
+37,T0039,2023-02-08,61,Grocery,Debit Card,2023-02
+7,T0040,2023-02-09,105,Grocery,Debit Card,2023-02
+21,T0041,2023-02-10,231,Clothing,Cash,2023-02
+9,T0042,2023-02-11,240,Clothing,Debit Card,2023-02
+39,T0043,2023-02-12,246,Grocery,Debit Card,2023-02
+18,T0044,2023-02-13,152,Grocery,Cash,2023-02
+4,T0045,2023-02-14,180,Clothing,Debit Card,2023-02
+25,T0046,2023-02-15,38,Electronics,Cash,2023-02
+14,T0047,2023-02-16,45,Electronics,Debit Card,2023-02
+50,T0048,2023-02-17,22,Clothing,Cash,2023-02
+9,T0049,2023-02-18,169,Electronics,Cash,2023-02
+26,T0050,2023-02-19,196,Clothing,Debit Card,2023-02
+2,T0051,2023-02-20,252,Electronics,Debit Card,2023-02
+20,T0052,2023-02-21,95,Electronics,Debit Card,2023-02
+28,T0053,2023-02-22,293,Grocery,Credit Card,2023-02
+47,T0054,2023-02-23,75,Grocery,Credit Card,2023-02
+7,T0055,2023-02-24,179,Electronics,Credit Card,2023-02
+44,T0056,2023-02-25,54,Electronics,Cash,2023-02
+8,T0057,2023-02-26,71,Grocery,Debit Card,2023-02
+47,T0058,2023-02-27,143,Grocery,Cash,2023-02
+35,T0059,2023-02-28,293,Grocery,Credit Card,2023-02
+14,T0060,2023-03-01,37,Clothing,Debit Card,2023-03
+17,T0061,2023-03-02,117,Electronics,Cash,2023-03
+36,T0062,2023-03-03,53,Grocery,Debit Card,2023-03
+50,T0063,2023-03-04,295,Electronics,Cash,2023-03
+40,T0064,2023-03-05,137,Clothing,Debit Card,2023-03
+4,T0065,2023-03-06,240,Clothing,Credit Card,2023-03
+2,T0066,2023-03-07,199,Grocery,Credit Card,2023-03
+6,T0067,2023-03-08,234,Clothing,Debit Card,2023-03
+42,T0068,2023-03-09,292,Electronics,Cash,2023-03
+4,T0069,2023-03-10,130,Grocery,Credit Card,2023-03
+29,T0070,2023-03-11,125,Electronics,Credit Card,2023-03
+18,T0071,2023-03-12,242,Electronics,Credit Card,2023-03
+26,T0072,2023-03-13,268,Clothing,Debit Card,2023-03
+44,T0073,2023-03-14,207,Clothing,Debit Card,2023-03
+34,T0074,2023-03-15,146,Clothing,Cash,2023-03
+10,T0075,2023-03-16,174,Clothing,Cash,2023-03
+36,T0076,2023-03-17,234,Clothing,Cash,2023-03
+14,T0077,2023-03-18,243,Grocery,Debit Card,2023-03
+31,T0078,2023-03-19,181,Electronics,Debit Card,2023-03
+48,T0079,2023-03-20,161,Electronics,Cash,2023-03
+15,T0080,2023-03-21,169,Electronics,Cash,2023-03
+8,T0081,2023-03-22,105,Electronics,Debit Card,2023-03
+14,T0082,2023-03-23,242,Clothing,Cash,2023-03
+23,T0083,2023-03-24,189,Electronics,Credit Card,2023-03
+40,T0084,2023-03-25,122,Grocery,Debit Card,2023-03
+21,T0085,2023-03-26,61,Grocery,Cash,2023-03
+16,T0086,2023-03-27,277,Electronics,Debit Card,2023-03
+45,T0087,2023-03-28,122,Electronics,Credit Card,2023-03
+18,T0088,2023-03-29,110,Grocery,Debit Card,2023-03
+47,T0089,2023-03-30,122,Grocery,Debit Card,2023-03
+24,T0090,2023-03-31,90,Clothing,Debit Card,2023-03
+26,T0091,2023-04-01,196,Grocery,Debit Card,2023-04
+25,T0092,2023-04-02,122,Clothing,Credit Card,2023-04
+45,T0093,2023-04-03,11,Clothing,Debit Card,2023-04
+41,T0094,2023-04-04,139,Clothing,Debit Card,2023-04
+29,T0095,2023-04-05,229,Clothing,Cash,2023-04
+15,T0096,2023-04-06,63,Clothing,Debit Card,2023-04
+45,T0097,2023-04-07,233,Electronics,Cash,2023-04
+1,T0098,2023-04-08,234,Grocery,Credit Card,2023-04
+25,T0099,2023-04-09,135,Clothing,Credit Card,2023-04
+7,T0100,2023-04-10,139,Grocery,Credit Card,2023-04
