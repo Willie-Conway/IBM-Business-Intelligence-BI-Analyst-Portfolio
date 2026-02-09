@@ -35,8 +35,7 @@ plt.xlabel('Category')
 plt.ylabel('Total Sales')
 plt.show()
 ```
-
-![image](https://github.com/user-attachments/assets/09c9439c-3599-4941-888d-04757992184a)
+![Bar Chart](<../Screenshots/Total Sales by Product Category.png>)
 
 
 ---
@@ -71,6 +70,8 @@ plt.xlabel('Time')
 plt.ylabel('Total Sales')
 plt.show()
 ```
+![Line Chart](<../Screenshots/Sales Trend Overtime.png>)
+
 
 ---
 
@@ -102,7 +103,7 @@ plt.ylabel('')
 plt.show()
 
 ```
-
+![Pie Chart](<../Screenshots/Sales Distribution by Region.png>)
 ---
 
 ## **Overall Findings from Initial Visualizations**
@@ -123,74 +124,4 @@ These initial visualizations help identify:
 
 They form a strong foundation for **advanced visualizations, data aggregation, and interactive dashboards** in later steps of the project.
 
-
-Perfect — I’ve added the **actual visualizations** and now I’ll tie them directly to **what they reveal**, exactly how instructors expect it to be explained in the final project.
-
----
-
-## **Initial Visualizations and What They Reveal**
-
-### **1. Bar Chart: Total Sales by Product Category**
-
-**Visualization:**
-Total sales aggregated by **Furniture**, **Office Supplies**, and **Technology**.
-
-**What it reveals:**
-
-* **Technology** is the top-performing category, generating the highest total sales.
-* **Furniture** follows closely but trails Technology.
-* **Office Supplies** has the lowest total sales but remains steady.
-
-**Insight:**
-Technology products are the primary revenue drivers and may justify increased marketing, inventory investment, or product expansion. Office Supplies may benefit from bundling or promotional strategies.
-
----
-
-### **2. Line Chart: Sales Trend Over Time**
-
-**Visualization:**
-Monthly total sales plotted over time using the **Order Date**.
-
-**What it reveals:**
-
-* Sales fluctuate throughout the year, showing **clear seasonality**.
-* Repeated **spikes toward the end of the year**, likely driven by holidays or promotional periods.
-* An **overall upward trend**, indicating steady business growth over time.
-
-**Insight:**
-The company experiences predictable peak periods that can be leveraged for targeted campaigns, staffing, and inventory planning. The upward trend suggests healthy long-term performance.
-
----
-
-### **3. Pie Chart: Sales Distribution by Region**
-
-**Visualization:**
-Percentage contribution of total sales by **West**, **East**, **Central**, and **South** regions.
-
-**What it reveals:**
-
-* The **West region** contributes the largest share of sales.
-* The **East region** is the second strongest performer.
-* **South** and **Central** regions contribute smaller portions.
-
-**Insight:**
-Sales are geographically concentrated. The West and East regions are key revenue centers, while the South and Central regions may represent growth opportunities through regional marketing or expansion strategies.
-
----
-
-## **Overall Insights from Initial Visualizations**
-
-* Revenue is unevenly distributed across **product categories** and **regions**.
-* Sales exhibit **seasonal behavior**, with identifiable peak periods.
-* Certain categories and regions consistently outperform others, providing clear areas for strategic focus.
-
----
-
-## **How These Visualizations Support Further Analysis**
-
-These initial visualizations:
-
-* Highlight where deeper **profitability and discount analysis** is needed
-* Identify regions and categories suitable for **advanced visualizations**
-* Provide a strong foundation for **interactive dashboards and AI-driven insights**
 
