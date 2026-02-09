@@ -1,5 +1,4 @@
 
-
 # **Chosen Visualization Types and Rationale**
 
 To represent key metrics and trends in the Superstore Sales dataset, the following basic visualizations were created:
@@ -68,5 +67,3 @@ Together, they provide a high-level overview of business performance while guidi
 ### **Conclusion**
 
 The selected basic visualizations effectively communicate key metrics and trends in the dataset. They provide a strong foundation for deeper analysis and set the stage for advanced visualizations and interactive dashboards in later steps.
-
-
