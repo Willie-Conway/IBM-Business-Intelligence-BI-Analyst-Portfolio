@@ -1,0 +1,101 @@
+theia@theiadocker-hirewillieco:/home/project$ export PGPASSWORD=b4XEtRih1bjCPAgwCSywNMhD; psql --host 172.21.167.215 -p 5432 -U postgres
+psql (14.19 (Ubuntu 14.19-0ubuntu0.22.04.1), server 13.2)
+Type "help" for help.
+
+postgres=# CREATE DATABASE BICapstone;
+CREATE DATABASE
+theia@theiadocker-hirewillieco:/home/project$ export PGPASSWORD=b4XEtRih1bjCPAgwCSywNMhD; psql --host 172.21.167.215 -p 5432 -U postgres
+psql (14.19 (Ubuntu 14.19-0ubuntu0.22.04.1), server 13.2)
+Type "help" for help.
+
+postgres=# CREATE DATABASE BICapstone;
+CREATE DATABASE
+postgres=# \connect bicapstone
+psql (14.19 (Ubuntu 14.19-0ubuntu0.22.04.1), server 13.2)
+You are now connected to database "bicapstone" as user "postgres".
+bicapstone=# \include BI-dump.sql
+SET
+SET
+SET
+SET
+SET
+ set_config 
+------------
+ 
+(1 row)
+
+SET
+SET
+SET
+SET
+SET
+SET
+CREATE TABLE
+ALTER TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE TABLE
+ALTER TABLE
+COPY 37
+COPY 699
+COPY 699
+COPY 19999
+COPY 144
+COPY 144
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+theia@theiadocker-hirewillieco:/home/project$ export PGPASSWORD=b4XEtRih1bjCPAgwCSywNMhD; psql --host 172.21.167.215 -p 5432 -U postgres
+psql (14.19 (Ubuntu 14.19-0ubuntu0.22.04.1), server 13.2)
+Type "help" for help.
+
+postgres=# CREATE DATABASE BICapstone;
+CREATE DATABASE
+postgres=# \connect bicapstone
+psql (14.19 (Ubuntu 14.19-0ubuntu0.22.04.1), server 13.2)
+You are now connected to database "bicapstone" as user "postgres".
+bicapstone=# \include BI-dump.sql
+SET
+SET
+SET
+SET
+SET
+ set_config 
+------------
+ 
+(1 row)
+
+SET
+SET
+SET
+SET
+SET
+SET
+CREATE TABLE
+ALTER TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE TABLE
+ALTER TABLE
+COPY 37
+COPY 699
+COPY 699
+COPY 19999
+COPY 144
+COPY 144
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+bicapstone=# 
