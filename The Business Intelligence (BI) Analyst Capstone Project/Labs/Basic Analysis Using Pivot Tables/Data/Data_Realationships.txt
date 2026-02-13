@@ -1,0 +1,13 @@
+sales
+  ↓ Store_ID
+store_names
+  ↓
+store_cities
+  ↓ City_ID
+city_names
+
+sales
+  ↓ Product_ID
+product_names
+  ↓
+product_hierarchy
