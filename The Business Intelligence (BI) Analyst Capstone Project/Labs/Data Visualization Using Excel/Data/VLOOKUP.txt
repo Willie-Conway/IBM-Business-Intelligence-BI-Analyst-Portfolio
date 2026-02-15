@@ -1,0 +1,5 @@
+VLOOKUP=VLOOKUP(product_id, product_names!A:B, 2, FALSE)
+=VLOOKUP(product_id, product_hierarchy!A:B, 2, FALSE)
+=VLOOKUP(store_id, store_names!A:B, 2, FALSE)
+=VLOOKUP(store_id, store_cities!A:B, 2, FALSE)
+=VLOOKUP(city_id, city_names!A:B, 2, FALSE)
