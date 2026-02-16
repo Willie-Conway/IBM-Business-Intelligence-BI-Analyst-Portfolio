@@ -307,8 +307,8 @@ IBM-Business-Intelligence-Portfolio/
 <div align="center">
     <h3>📊 Excel Dashboards</h3>
     <p float="left">
-        <img src="Excel%20Basics%20for%20Data%20Analysis/Labs/Screenshots/indian_startup_funding_Lab7_with_slicers_timelines.png" width="400" />
-        <img src="Data%20Visualization%20and%20Dashboards%20with%20Excel%20and%20Cognos/Lab/Screenshots/Final_Assignment_2_Capture_1a_SR.png" width="400" />
+        <img src="https://github.com/Willie-Conway/IBM-Business-Intelligence-BI-Analyst-Portfolio/blob/c6221a85fffc5feaef19669b7bebcc835b28d88f/Excel%20Basics%20for%20Data%20Analysis/Screenshots/indian_startup_funding_Lab7_with_slicers_timelines.png" width="400" />
+        <img src="https://github.com/Willie-Conway/IBM-Business-Intelligence-BI-Analyst-Portfolio/blob/c6221a85fffc5feaef19669b7bebcc835b28d88f/Excel%20Basics%20for%20Data%20Analysis/Screenshots/Pivot%20Table%20Features.png" width="400" />
     </p>
     <p><em>Indian Startup Funding Dashboard & Cognos Analytics Dashboard</em></p>
 </div>
@@ -316,8 +316,8 @@ IBM-Business-Intelligence-Portfolio/
 <div align="center">
     <h3>🗄️ Database & SQL Projects</h3>
     <p float="left">
-        <img src="Introduction%20to%20Relational%20Databases%20(RDBMS)/Final%20Project/Screenshots/Completed%20COFFEE%20ERD%20Database.png" width="400" />
-        <img src="SQL%20-%20A%20Practical%20Introduction%20for%20Querying%20Databases/Working%20with%20real-world%20data%20sets%2C%20Final%20Project%20%26%20Exam/Labs/Final%20Project/Screenshots/Analyze%20crime%20patterns%20by%20year%20and%20month.png" width="400" />
+        <img src="https://github.com/Willie-Conway/IBM-Business-Intelligence-BI-Analyst-Portfolio/blob/ee7e1b232c8b825c704d13eb11cb9dd447666646/SQL%20-%20A%20Practical%20Introduction%20for%20Querying%20Databases/Labs/Working%20with%20real-world%20data%20sets%2C%20Final%20Project%20%26%20Exam/Screenshots/Which%20schools%20have%20highest%20Safety%20Score.png" width="400" />
+        <img src="https://github.com/Willie-Conway/IBM-Business-Intelligence-BI-Analyst-Portfolio/blob/ee7e1b232c8b825c704d13eb11cb9dd447666646/SQL%20-%20A%20Practical%20Introduction%20for%20Querying%20Databases/Labs/Working%20with%20real-world%20data%20sets%2C%20Final%20Project%20%26%20Exam/Screenshots/Get%20the%20total%20College%20Enrollment%20for%20each%20Community%20Area.png" width="400" />
     </p>
     <p><em>Coffee Shop ERD & Chicago Crime Analysis</em></p>
 </div>
