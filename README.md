@@ -365,7 +365,7 @@ IBM-Business-Intelligence-Portfolio/
 - **AI-enhanced BI**: Leveraging generative AI for data analysis and visualization
 - **Business communication**: Translating data insights into business recommendations
 
-## 🤝 **Contributing**
+## 🫱🏿‍🫲🏿 **Contributing**
 
 This portfolio is a personal showcase of my learning journey through the IBM Business Intelligence Analyst Professional Certificate. While contributions aren't expected, feedback and suggestions are welcome!
 
@@ -379,7 +379,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - GitHub: [@Willie-Conway](https://github.com/Willie-Conway)
 - LinkedIn: [LinkedIn Profile](https://www.linkedin.com/in/willieconway/)
 - Email: hire.willie.conway@gmail.com
-- Tableau Public: [Your Tableau Public Profile]
+- Tableau Public: [Tableau Public](https://public.tableau.com/app/profile/willie.conway2396/vizzes)
 
 ---
 
