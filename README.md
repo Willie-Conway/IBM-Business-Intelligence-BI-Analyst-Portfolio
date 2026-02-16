@@ -286,14 +286,14 @@ IBM-Business-Intelligence-Portfolio/
 <div align="center">
     <h3>📈 Tableau Dashboards</h3>
     <p float="left">
-        <img src="Advanced Data Visualization with Tableau/Final Project - Working with the New York Airbnb Pricing Report in Tableau Public/Screenshots/New%20York%20City%20Airbnb%20Pricing%20%26%20Availability%20Overview%20(2019).png" width="400" />
-        <img src="Getting Started with Tableau/Labs/Final Project - Working with the World Happiness Report in Tableau Public/Screenshots/Global%20Happiness%20Insights_%20Exploring%20the%20Drivers%20of%20Well-Being%20(2015-2023)%20(7).png" width="400" />
+        <img src="https://github.com/Willie-Conway/IBM-Business-Intelligence-BI-Analyst-Portfolio/blob/c4e71064dcad671a0cdfa19cfcb566e2b878fb80/Advanced%20Data%20Visualization%20with%20Tableau/Labs/Final%20Project%20-%20Working%20with%20the%20New%20York%20Airbnb%20Pricing%20Report%20in%20Tableau%20Public/Screenshots/New%20York%20City%20Airbnb%20Pricing%20%26%20Availability%20Overview%20(2019).png" width="400" />
+        <img src="https://github.com/Willie-Conway/IBM-Business-Intelligence-BI-Analyst-Portfolio/blob/c4e71064dcad671a0cdfa19cfcb566e2b878fb80/Getting%20Started%20with%20Tableau/Labs/Final%20Project%20-%20Working%20with%20the%20World%20Happiness%20Report%20in%20Tableau%20Public/Screenshots/Effect%20of%20GDP%20per%20Capita%20on%20Happiness%20Score%20(Top%2010%20Most%20Happy%20Countries).png" width="400" />
     </p>
     <p><em>New York Airbnb Pricing Dashboard & World Happiness Report Dashboard</em></p>
     
    <p float="left">
-        <img src="The%20Business%20Intelligence%20(BI)%20Analyst%20Capstone%20Project/Labs/Creating%20Interactive%20Dashboards%20in%20Tableau/Screenshots/Retail%20Sales.pdf" width="400" />
-        <img src="Advanced%20Data%20Visualization%20with%20Tableau/Labs/Practice%20Project%20-%20Exploring%20Socioeconomic%20Trends%20in%20US%20Counties/Screenshots/Exploring%20Socioeconomic%20Trends%20in%20US%20Counties.png" width="400" />
+        <img src="https://github.com/Willie-Conway/IBM-Business-Intelligence-BI-Analyst-Portfolio/blob/c4e71064dcad671a0cdfa19cfcb566e2b878fb80/The%20Business%20Intelligence%20(BI)%20Analyst%20Capstone%20Project/Labs/Creating%20Interactive%20Dashboards%20in%20Tableau/Screenshots/Retail%20Chain%20Performance%20Analysis%20Dashboard.png" width="400" />
+        <img src="https://github.com/Willie-Conway/IBM-Business-Intelligence-BI-Analyst-Portfolio/blob/c4e71064dcad671a0cdfa19cfcb566e2b878fb80/Advanced%20Data%20Visualization%20with%20Tableau/Labs/Practice%20Project%20-%20Exploring%20Socioeconomic%20Trends%20in%20US%20Counties/Screenshots/Exploring%20Socioeconomic%20Trends%20in%20US%20Counties.png" width="400" />
     </p>
     <p><em>Retail Sales Dashboard & US Socioeconomic Trends Dashboard</em></p>
     
